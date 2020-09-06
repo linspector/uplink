@@ -31,7 +31,7 @@ import os
 import os.path as path
 import sqlite3
 import time
-import tzlocal
+# import tzlocal
 
 from fritzconnection.lib.fritzstatus import FritzStatus
 
@@ -84,8 +84,6 @@ def get_data(config):
     c = conn.cursor()
     for i in range(len(config["uplinks"])):
         timestamp = calendar.timegm(time.gmtime())
-        local_timezone = tzlocal.get_localzone()
-        logger.debug("Timezone:" + str(local_timezone))
         local_time = time.localtime(timestamp)
         d = time.strftime("%Y-%m-%d ", local_time)
         t = time.strftime("%H:%M:%S", local_time)
