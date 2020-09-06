@@ -31,7 +31,6 @@ import os
 import os.path as path
 import sqlite3
 import time
-# import tzlocal
 
 from fritzconnection.lib.fritzstatus import FritzStatus
 
