@@ -1,7 +1,10 @@
 CREATE TABLE "log" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"datetime"	TEXT NOT NULL,
+	"timestamp"	TEXT NOT NULL,
+	"date"	TEXT,
+	"time"	TEXT,
 	"uptime"	INTEGER,
+	"internal_ip"	TEXT,
 	"external_ip"	TEXT,
 	"external_ipv6"	TEXT,
 	"is_linked"	INTEGER,
@@ -13,5 +16,6 @@ CREATE TABLE "log" (
 	"str_max_linked_bit_rate_up"	TEXT,
 	"str_max_linked_bit_rate_down"	TEXT,
 	"modelname"	TEXT,
-	"system_version"	TEXT
+	"system_version"	TEXT,
+	"message"	TEXT
 );
