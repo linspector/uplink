@@ -1,8 +1,0 @@
-{
-  "interval": 60,
-  "database":  "uplink.sqlite3",
-  "uplinks": [
-    { "provider": "Cable Provider", "ip": "192.168.0.1", "password": "1234" },
-    { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
-  ]
-}

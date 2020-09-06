@@ -2,3 +2,4 @@
 config.json
 uplink.iml
 uplink.sqlite3
+log/*.log*
