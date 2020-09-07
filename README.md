@@ -59,6 +59,16 @@ I actually use "[DB Browser for SQLite](https://sqlitebrowser.org/)" for taking 
 data uplink is collecting.
 
 There will be a Gtk+ frontend to uplink at some time but this project is at a very early 
-stage of development, so I want to write the collector firt. Even support for other SQL 
-databases is planned in conjunction with the Gtk+ frontend. I use sqlite3 only because I 
+stage of development, so I want to write the collector first. Even support for other SQL 
+databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I 
 can move fast-forward.
+
+## TODO
+
+ - A lot... :)
+ - SQL server backend
+ - Gtk+ frontend
+ - A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron. 
+ - A daemon mode to be a real UNIX daemon. For now, it's just "sleep" based.
+ - Platform independence
+ 
