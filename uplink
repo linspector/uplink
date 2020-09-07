@@ -30,8 +30,10 @@ import logging.handlers
 import os
 import os.path as path
 import sqlite3
+import sys
 import time
 
+sys.path.append("./fritzconnection/")
 from fritzconnection.lib.fritzstatus import FritzStatus
 
 __version__ = "0.1"
