@@ -32,7 +32,7 @@ Edit config.json to your needs.
  - uplinks: List of devices you want to poll
    - provider: Custom name of the uplink provider
    - ip: The IP of the router device
-   - password: The password of the router device 
+   - password: The password of the router device
 
 #### Example
 
@@ -45,7 +45,7 @@ Edit config.json to your needs.
             { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
         ]
     }
-    
+
 ### Create Database
 
     sqlite3 uplink.sqlite3 < uplink.sql
@@ -53,27 +53,28 @@ Edit config.json to your needs.
 ## Usage
 
     ./uplink ./config.json
-    
+
 ### Help
 
     ./uplink --help
 
 ## View collected data
 
-I actually use "[DB Browser for SQLite](https://sqlitebrowser.org/)" for taking a look at the 
+I actually use "[DB Browser for SQLite](https://sqlitebrowser.org/)" for taking a look at the
 data uplink is collecting.
 
-There will be a Gtk+ frontend to uplink at some time but this project is at a very early 
-stage of development, so I want to write the collector first. Even support for other SQL 
-databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I 
+There will be a Gtk+ frontend to uplink at some time but this project is at a very early
+stage of development, so I want to write the collector first. Even support for other SQL
+databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I
 can move fast-forward.
 
 ## TODO
 
  - A lot... :)
+ - Parallelize queries using threads to improve performance
  - SQL server backend
  - Gtk+ frontend
  - ~~A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron.~~
  - A daemon mode to be a real UNIX daemon. For now, it's just "sleep" based.
  - Platform independence
- 
+
