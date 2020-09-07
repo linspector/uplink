@@ -4,8 +4,8 @@ TODO: Write description.
 
 ## Requirements
 
- - Python 3.8
- - fritzconnection 1.3.4 (pip install fritzconnection)
+ - Python >= 3.8
+ - fritzconnection >= 1.3.4 (Included as Git submodule. See installation instructions below)
    - https://pypi.org/project/fritzconnection/
    - https://fritzconnection.readthedocs.io/en/1.3.4/index.html
 
@@ -13,6 +13,7 @@ TODO: Write description.
 
     git clone https://git.unixpeople.org/hanez/uplink.git
     cd uplink
+    git submodule update --init --recursive
     cp config.example.json config.json
 
 ### Configuration
