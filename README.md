@@ -35,6 +35,7 @@ Edit config.json to your needs.
     {
         "interval": 60,
         "database":  "./uplink.sqlite3",
+        "cron_mode": false,
         "uplinks": [
             { "provider": "Cable Provider", "ip": "192.168.0.1", "password": "1234" },
             { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
@@ -68,7 +69,7 @@ can move fast-forward.
  - A lot... :)
  - SQL server backend
  - Gtk+ frontend
- - A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron. 
+ - ~~A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron.~~
  - A daemon mode to be a real UNIX daemon. For now, it's just "sleep" based.
  - Platform independence
  
