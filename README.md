@@ -8,6 +8,7 @@ TODO: Write description.
  - fritzconnection >= 1.3.4 (Included as Git submodule. See installation instructions below)
    - https://pypi.org/project/fritzconnection/
    - https://fritzconnection.readthedocs.io/en/1.3.4/index.html
+ - Git (Just to install the way I do. You can also install downloading a .zip file and install libraries by yourself... not what I like, so I actually will not take care of this.)
 
 ## Installation
 
