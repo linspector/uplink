@@ -22,8 +22,6 @@
 
 import argparse
 import calendar
-# import datetime
-# import daemon
 import json
 import logging
 import logging.handlers
@@ -125,7 +123,6 @@ def get_data(config):
 
 
 def run(config):
-    # with daemon.DaemonContext():
     while True:
         get_data(config)
         if config["cron_mode"]:
