@@ -1,10 +1,10 @@
 {
     "interval": 60,
-    "database_type": "sqlite3",
-    "database":  "./uplink.sqlite3",
-    "database_host": "",
-    "database_user": "",
-    "database_password": "",
+    "database_type": "mysql",
+    "database":  "uplink",
+    "database_host": "127.0.0.1",
+    "database_user": "USER",
+    "database_password": "PASSWORD",
     "cron": false,
     "daemon": false,
     "uplinks": [
