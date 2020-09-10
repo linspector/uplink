@@ -27,12 +27,12 @@ import logging
 import logging.handlers
 import os
 import os.path as path
-import sqlite3
+import pymysql
+#import sqlite3
 import sys
 import time
 
-from fritzconnection.fritzconnection.lib.fritzstatus import FritzStatus
-from peewee import peewee
+from fritzconnection.lib.fritzstatus import FritzStatus
 
 __version__ = "0.1"
 
@@ -103,8 +103,15 @@ def parse_args():
 
 
 def get_data(config):
-    conn = sqlite3.connect(config["database"])
-    c = conn.cursor()
+
+    #conn = sqlite3.connect(config["database"])
+    #c = conn.cursor()
+
+    con = pymysql.connect(config["database_host"],
+                          config["database_user"],
+                          config["database_password"],
+                          config["database"])
+
     for i in range(len(config["uplinks"])):
         timestamp = calendar.timegm(time.gmtime())
         local_time = time.localtime(timestamp)
@@ -119,8 +126,11 @@ def get_data(config):
                   'VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
                   str(config["uplinks"][i]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"ERROR: ' + str(err) + '\")'
             logging.debug(sql)
-            c.execute(sql)
-            conn.commit()
+            #c.execute(sql)
+            #conn.commit()
+            with con.cursor() as cur:
+                cur.execute(sql)
+            con.commit()
             break
 
         if fc.is_connected:
@@ -141,9 +151,13 @@ def get_data(config):
               str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
               str(fc.fc.system_version) + '\",\"' + status + '\")'
         logging.debug(sql)
-        c.execute(sql)
-        conn.commit()
-    conn.close()
+        #c.execute(sql)
+        #conn.commit()
+        with con.cursor() as cur:
+            cur.execute(sql)
+        con.commit()
+    #conn.close()
+    con.close()
 
 
 def run(config):

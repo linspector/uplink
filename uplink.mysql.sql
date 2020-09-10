@@ -1,0 +1,23 @@
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` int(11) NOT NULL,
+  `date` date DEFAULT NULL,
+  `time` time DEFAULT NULL,
+  `uptime` int(11) DEFAULT NULL,
+  `internal_ip` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `external_ip` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `external_ipv6` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_linked` tinyint(1) DEFAULT NULL,
+  `is_connected` tinyint(1) DEFAULT NULL,
+  `str_transmission_rate_up` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `str_transmission_rate_down` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `str_max_bit_rate_up` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `str_max_bit_rate_down` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `str_max_linked_bit_rate_up` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `str_max_linked_bit_rate_down` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `modelname` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `system_version` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `message` varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

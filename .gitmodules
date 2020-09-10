@@ -1,6 +1,0 @@
-[submodule "fritzconnection"]
-	path = fritzconnection
-	url = https://github.com/kbr/fritzconnection.git
-[submodule "peewee"]
-	path = peewee
-	url = https://github.com/coleifer/peewee.git

@@ -10,20 +10,16 @@ TODO: Write feature list
 
 ## Requirements
 
+ - Git (only for installing from Git repository)
  - Python >= 3.8
  - fritzconnection >= 1.3.4
-   - https://pypi.org/project/fritzconnection/
- - peewee >= 3.13.3
-   - https://pypi.org/project/peewee/
- - Git (Just to install the way I do. You can also install downloading a .zip file and install libraries by yourself... not what I like, so I actually will not take care of this.)
+ - pymysql >= 0.10.1
 
-3rd party libraries are included as Git submodule. See installation instructions below. Actually I use the current repository code. This will change but for development this is the easiest solution. I will switch to stable releases some day.
-
+Just install the 3rdf party dependencies using `pip install $PACKAGE`
 ## Installation
 
     git clone https://git.unixpeople.org/hanez/uplink.git
     cd uplink
-    git submodule update --init --recursive
     cp config.example.json config.json
 
 ### Configuration
@@ -42,9 +38,14 @@ Edit config.json to your needs.
 #### Example
 
     {
-        "interval": 60,
-        "database":  "./uplink.sqlite3",
-        "cron_mode": false,
+    "interval": 60,
+    "database_type": "mysql",
+    "database":  "uplink",
+    "database_host": "127.0.0.1",
+    "database_user": "USER",
+    "database_password": "PASSWORD",
+    "cron": false,
+    "daemon": false,
         "uplinks": [
             { "provider": "Cable Provider", "ip": "192.168.0.1", "password": "1234" },
             { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
