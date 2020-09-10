@@ -2,6 +2,8 @@
 
 **THIS CODE IS AT A VERY EARLY STAGE OF DEVELOPMENT! USE AT YOUR OWN RISK!**
 
+**SINCE THIS CODE CHANGES EVERY DAY THE DOCUMENTATION MAY NOT BE CORRECT!**
+
 uplink is a tool to monitor the uplink status of AVM FRITZ!Box Cable and DSL based routers. It uses the TR-064 protocol over UPnP.
 
 ## Features
@@ -78,10 +80,12 @@ can move fast-forward.
 
  - A lot... :)
  - Make all config vars as ARGS and vice versa. ARGS have higher priority. Chain: default -> config -> ARGS.
- - Parallelize queries using threads to improve performance; Does not work using SQLite because of exclusive access to the database
- - SQL server backend; PostgreSQL? Or peewee ORM to support PostgreSQL, MySQL and SQLite.
- - Gtk+ frontend. wxGlade?
- - ~~A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron.~~
+ - ~~Parallelize queries using threads to improve performance; Does not work using SQLite because of exclusive access to the database~~
+ - ~~SQL server backend; MariaDB/MySQL?~~ DONE
+ - Bring back SQLite support
+ - Switch to ORM (peewee?) to support PostgreSQL, MySQL and SQLite.
+ - Gtk+ frontend connecting to the database or loading a local copy of a SQLite file. wxGlade?
+ - ~~A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron.~~ DONE
  - A daemon mode to be a real UNIX daemon. For now, it's just sleep() based.
  - Always keep platform independence in mind but not if uplink looses nice features on Linux. 
 
