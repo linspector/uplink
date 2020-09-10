@@ -31,36 +31,57 @@ import sqlite3
 import sys
 import time
 
-sys.path.append("./fritzconnection/")
-from fritzconnection.lib.fritzstatus import FritzStatus
+from fritzconnection.fritzconnection.lib.fritzstatus import FritzStatus
+from peewee import peewee
 
 __version__ = "0.1"
 
 logger = logging.getLogger(__name__)
 
+PURPLE = "\033[95m"
+BLUE = "\033[94m"
+YELLOW = "\033[93m"
+GREEN = "\033[92m"
+RED = "\033[91m"
+END = "\033[0m"
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="uplink is a tool to monitor the link status of AVM FRITZ!Box based Cable and DSL routers.",
+        description="uplink is a tool to monitor the link status of AVM FRITZ!Box Cable and DSL based routers.",
         epilog="uplink is not some program expecting uplinks to work!",
         prog="uplink")
 
-    parser.add_argument("--version", action="version", version="%(prog)s " + str(__version__))
+    parser.add_argument("config", metavar="CONFIGFILE", help="the configfile to use")
 
-    parser.add_argument("config", metavar="CONFIGFILE",
-                        help="the configfile to use")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--cron", default=False, dest="cron", action="store_true",
+                        help="cron mode executes the script only once without loop (default: false)")
 
-    parser.add_argument("-n", "--nocolor",
-                        help="disable colored output")
+    mode.add_argument("--daemon", default=False, dest="daemon", action="store_true",
+                      help="run as native daemon (default: false)")
 
-    parser.add_argument("-l", "--logfile", default="./log/uplink.log", metavar="FILE",
-                        help="set logfile to use (default: ./log/uplink.log)")
+    mode.add_argument("--foreground", default=True, dest="foreground", action="store_true",
+                      help="run in foreground (default: true)")
+
+    parser.add_argument("-i", "--interval", default=60, type=int,
+                        help="seconds poll interval (default: 60)")
+
+    parser.add_argument("-b", "--database", metavar="DATABASE", help="database to use")
+
+    parser.add_argument("-u", "--user", type=str, help="database username")
+
+    parser.add_argument("-p", "--password", type=str, help="database password")
+
+    parser.add_argument("-l", "--logfile", metavar="FILE", help="logfile to use")
 
     parser.add_argument("-c", "--logcount", default=5, type=int,
                         help="maximum number of logfiles in rotation (default: 5)")
 
     parser.add_argument("-m", "--logsize", default=10485760, type=int,
                         help="maximum logfile size in bytes (default: 10485760)")
+
+    parser.add_argument("-s", "--stdout", default=False, dest="stdout", action="store_true", help="log to stdout")
 
     output = parser.add_mutually_exclusive_group()
     output.add_argument("-q", "--quiet", action="store_const", dest="loglevel", const=logging.ERROR,
@@ -74,7 +95,10 @@ def parse_args():
 
     output.add_argument("-d", "--debug", action="store_const", dest="loglevel", const=logging.DEBUG,
                         help="output debug messages")
-    output.set_defaults(loglevel=logging.INFO)
+    output.set_defaults(loglevel=logging.ERROR)
+
+    parser.add_argument("--version", action="version", version="%(prog)s " + str(__version__))
+
     return parser.parse_args()
 
 
@@ -104,7 +128,7 @@ def get_data(config):
         else:
             status = "DOWN"
 
-        logger.info(config["uplinks"][i]["provider"] + ": " + status)
+        logger.info(config["uplinks"][i]["provider"] + " " + status)
         sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
               'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
               'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, modelname, ' \
@@ -125,7 +149,7 @@ def get_data(config):
 def run(config):
     while True:
         get_data(config)
-        if config["cron_mode"]:
+        if config["cron"]:
             exit(0)
         time.sleep(config["interval"])
 
@@ -133,20 +157,33 @@ def run(config):
 if __name__ == "__main__":
     args = parse_args()
 
-    logfile = path.expanduser(args.logfile)
-    if not path.exists(path.dirname(logfile)):
-        os.makedirs(path.dirname(logfile))
+    if args.stdout or args.logfile:
+        root_logger = logging.getLogger()
 
-    root_logger = logging.getLogger()
-    formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-    handler = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=args.logsize, backupCount=args.logcount)
-    handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
-    root_logger.setLevel(args.loglevel)
+    if args.stdout:
+        formatter = logging.Formatter(BLUE+"%(asctime)s"+END+":"+PURPLE+"%(levelname)s"+END+":"+YELLOW+"%(name)s"+END+":%(message)s")
+        handler1 = logging.StreamHandler(sys.stdout)
+        handler1.setFormatter(formatter)
+        root_logger.addHandler(handler1)
+
+    if args.logfile:
+        logfile = path.expanduser(args.logfile)
+        if not path.exists(path.dirname(logfile)):
+            os.makedirs(path.dirname(logfile))
+        formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(message)s")
+        handler2 = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=args.logsize, backupCount=args.logcount)
+        handler2.setFormatter(formatter)
+        root_logger.addHandler(handler2)
+
+    if args.stdout or args.logfile:
+        root_logger.setLevel(args.loglevel)
 
     config_path = args.config
     with open(config_path, 'r') as configfile:
         config_data = configfile.read()
     _config = json.loads(config_data)
-
-    run(_config)
+    try:
+        run(_config)
+    except KeyboardInterrupt:
+        logger.info("uplink terminated!")
+        exit(0)

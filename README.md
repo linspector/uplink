@@ -1,6 +1,8 @@
-# UPLINK 0.1
+# uplink - is not some program expecting uplinks to work!
 
-TODO: Write description.
+**THIS CODE IS AT A VERY EARLY STAGE OF DEVELOPMENT! USE AT YOUR OWN RISK!**
+
+uplink is a tool to monitor the uplink status of AVM FRITZ!Box Cable and DSL based routers. It uses the TR-064 protocol over UPnP.
 
 ## Features
 
@@ -9,10 +11,13 @@ TODO: Write feature list
 ## Requirements
 
  - Python >= 3.8
- - fritzconnection >= 1.3.4 (Included as Git submodule. See installation instructions below)
+ - fritzconnection >= 1.3.4
    - https://pypi.org/project/fritzconnection/
-   - https://fritzconnection.readthedocs.io/en/1.3.4/index.html
+ - peewee >= 3.13.3
+   - https://pypi.org/project/peewee/
  - Git (Just to install the way I do. You can also install downloading a .zip file and install libraries by yourself... not what I like, so I actually will not take care of this.)
+
+3rd party libraries are included as Git submodule. See installation instructions below. Actually I use the current repository code. This will change but for development this is the easiest solution. I will switch to stable releases some day.
 
 ## Installation
 
@@ -68,13 +73,14 @@ stage of development, so I want to write the collector first. Even support for o
 databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I
 can move fast-forward.
 
-## TODO
+## TODO (in no particular order)
 
  - A lot... :)
- - Parallelize queries using threads to improve performance
- - SQL server backend
- - Gtk+ frontend
+ - Make all config vars as ARGS and vice versa. ARGS have higher priority. Chain: default -> config -> ARGS.
+ - Parallelize queries using threads to improve performance; Does not work using SQLite because of exclusive access to the database
+ - SQL server backend; PostgreSQL? Or peewee ORM to support PostgreSQL, MySQL and SQLite.
+ - Gtk+ frontend. wxGlade?
  - ~~A cron mode to not let uplink run in an endless loop to be scheduled and executed by cron.~~
- - A daemon mode to be a real UNIX daemon. For now, it's just "sleep" based.
- - Platform independence
+ - A daemon mode to be a real UNIX daemon. For now, it's just sleep() based.
+ - Always keep platform independence in mind but not if uplink looses nice features on Linux. 
 

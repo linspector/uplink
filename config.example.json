@@ -1,7 +1,12 @@
 {
     "interval": 60,
+    "database_type": "sqlite3",
     "database":  "./uplink.sqlite3",
-    "cron_mode": false,
+    "database_host": "",
+    "database_user": "",
+    "database_password": "",
+    "cron": false,
+    "daemon": false,
     "uplinks": [
         { "provider": "Cable Provider", "ip": "192.168.0.1", "password": "1234" },
         { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
