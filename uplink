@@ -107,10 +107,15 @@ def get_data(config, inc):
     #conn = sqlite3.connect(config["database"])
     #c = conn.cursor()
 
-    con = pymysql.connect(config["database_host"],
-                          config["database_user"],
-                          config["database_password"],
-                          config["database"])
+    try:
+        con = pymysql.connect(config["database_host"],
+                              config["database_user"],
+                              config["database_password"],
+                              config["database"])
+    except Exception as err:
+        logger.error("ERROR: Database connection failed!" + str(err))
+        #thread.interrupt_main()
+        os._exit(1)
 
     #for i in range(len(config["uplinks"])):
     timestamp = calendar.timegm(time.gmtime())
@@ -132,7 +137,7 @@ def get_data(config, inc):
         with con.cursor() as cur:
             cur.execute(sql)
         con.commit()
-        exit()
+        exit(1)
 
     if fc.is_connected:
         status = "UP"
