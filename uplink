@@ -114,6 +114,8 @@ def get_data(config, inc):
                               config["database"])
     except Exception as err:
         logger.error("ERROR: Database connection failed!" + str(err))
+        # see https://stackoverflow.com/questions/1489669/how-to-exit-the-entire-application-from-a-python-thread
+        # maybe the following is better. need to evaluate:
         #thread.interrupt_main()
         os._exit(1)
 
