@@ -8,16 +8,16 @@ uplink is a tool to monitor the uplink status of AVM FRITZ!Box Cable and DSL bas
 
 ## Features
 
-TODO: Write feature list
+For now I can say that uplink can monitor the status of you FRITZ!Box uplinks. It can log to a file and writes results to a MariaDB/MySQL database. With some editing of the code you can you use SQLite too but this feature is not active at the moment. This will change in the future. I switched to MariaDB because I run uplink on a RaspberryPi and are evaluating results on my workstation. I am working on a Gtk+ frontend to generate statistics...
 
 ## Requirements
 
  - Git (only for installing from Git repository)
- - Python3 (Running for me using 3.7.3 on Raspbian 10 and 3.8.5 on Arch Linux) 
+ - Python3 (running for me using 3.7.3 on Raspbian 10 and 3.8.5 on Arch Linux) 
  - fritzconnection >= 1.3.4
  - pymysql >= 0.10.1
 
-Just install the 3rdf party dependencies using `pip install $PACKAGE`
+Just install the 3rd party dependencies using `pip install $PACKAGE` or your OS package manager
 ## Installation
 
     git clone https://git.unixpeople.org/hanez/uplink.git
