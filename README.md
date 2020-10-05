@@ -13,7 +13,7 @@ TODO: Write feature list
 ## Requirements
 
  - Git (only for installing from Git repository)
- - Python >= 3.8
+ - Python3 (Running for me using 3.7.3 on Raspbian 10 and 3.8.5 on Arch Linux) 
  - fritzconnection >= 1.3.4
  - pymysql >= 0.10.1
 
