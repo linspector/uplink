@@ -68,13 +68,9 @@ Edit config.json to your needs.
 
 ## View collected data
 
-I actually use "[DB Browser for SQLite](https://sqlitebrowser.org/)" for taking a look at the
-data uplink is collecting.
+I actually use "[DBeaver](https://dbeaver.io/)" for taking a look at the data uplink is collecting.
 
-There will be a Gtk+ frontend to uplink at some time but this project is at a very early
-stage of development, so I want to write the collector first. Even support for other SQL
-databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I
-can move fast-forward.
+There will be a Gtk+ frontend to uplink at some time but this project is at a very early stage of development, so I want to write the collector first. Even support for other SQL databases is in planning in conjunction with the Gtk+ frontend. I use sqlite3 only because I can move fast-forward.
 
 ## TODO (in no particular order)
 
