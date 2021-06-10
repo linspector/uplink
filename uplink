@@ -28,7 +28,6 @@ import logging.handlers
 import os
 import os.path as path
 import pymysql
-#import sqlite3
 import sys
 import time
 
@@ -57,7 +56,7 @@ def parse_args():
 
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--cron", default=False, dest="cron", action="store_true",
-                        help="cron mode executes the script only once without loop (default: false)")
+                      help="cron mode executes the script only once without loop (default: false)")
 
     mode.add_argument("--daemon", default=False, dest="daemon", action="store_true",
                       help="run as native daemon (default: false)")
@@ -104,22 +103,18 @@ def parse_args():
 
 
 def get_data(config, inc):
-    #conn = sqlite3.connect(config["database"])
-    #c = conn.cursor()
-
     try:
-        con = pymysql.connect(config["database_host"],
-                              config["database_user"],
-                              config["database_password"],
-                              config["database"])
+        con = pymysql.connect(host=config["database_host"],
+                              user=config["database_user"],
+                              password=config["database_password"],
+                              database=config["database"])
     except Exception as err:
         logger.error("ERROR: Database connection failed!" + str(err))
         # see https://stackoverflow.com/questions/1489669/how-to-exit-the-entire-application-from-a-python-thread
         # maybe the following is better. need to evaluate:
-        #thread.interrupt_main()
-        os._exit(1)
+        # thread.interrupt_main()
+        exit(1)
 
-    #for i in range(len(config["uplinks"])):
     timestamp = calendar.timegm(time.gmtime())
     local_time = time.localtime(timestamp)
     d = time.strftime("%Y-%m-%d ", local_time)
@@ -128,14 +123,12 @@ def get_data(config, inc):
     try:
         fc = FritzStatus(address=config["uplinks"][inc]["ip"], password=config["uplinks"][inc]["password"])
     except Exception as err:
-        logger.error("ERROR: " + str(err) + " on device with ip:" + config["uplinks"][i]["ip"])
+        logger.error("ERROR: " + str(err) + " on device with ip:" + config["uplinks"][inc]["ip"])
         sql = 'INSERT INTO log (timestamp, date, time, internal_ip, is_linked, is_connected, provider, message) ' \
               'VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
               str(config["uplinks"][inc]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"' + \
               str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\")'
         logging.debug(sql)
-        #c.execute(sql)
-        #conn.commit()
         with con.cursor() as cur:
             cur.execute(sql)
         con.commit()
@@ -159,12 +152,9 @@ def get_data(config, inc):
           str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
           str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\")'
     logging.debug(sql)
-    #c.execute(sql)
-    #conn.commit()
     with con.cursor() as cur:
         cur.execute(sql)
     con.commit()
-    #conn.close()
     con.close()
 
 
@@ -185,7 +175,8 @@ if __name__ == "__main__":
         root_logger = logging.getLogger()
 
     if args.stdout:
-        formatter = logging.Formatter(BLUE+"%(asctime)s"+END+":"+PURPLE+"%(levelname)s"+END+":"+YELLOW+"%(name)s"+END+":%(message)s")
+        formatter = logging.Formatter(
+            BLUE + "%(asctime)s" + END + ":" + PURPLE + "%(levelname)s" + END + ":" + YELLOW + "%(name)s" + END + ":%(message)s")
         handler1 = logging.StreamHandler(sys.stdout)
         handler1.setFormatter(formatter)
         root_logger.addHandler(handler1)
