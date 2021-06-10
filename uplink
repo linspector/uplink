@@ -175,8 +175,8 @@ def run(config):
 if __name__ == "__main__":
     args = parse_args()
 
-    if args.stdout or args.logfile:
-        root_logger = logging.getLogger()
+    #if args.stdout or args.logfile:
+    root_logger = logging.getLogger()
 
     if args.stdout:
         formatter = logging.Formatter(
