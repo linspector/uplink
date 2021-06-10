@@ -180,7 +180,7 @@ if __name__ == "__main__":
 
     if args.stdout:
         formatter = logging.Formatter(
-            PURPLE + "%(asctime)s" + END + ":" + BLUE + "%(levelname)s" + END + ":" + YELLOW + "%(name)s" + END + GRAY + ":%(message)s" + END)
+            PURPLE + "%(asctime)s" + END + ":" + BLUE + "%(levelname)s" + END + ":" + YELLOW + "%(name)s" + END + ":" + GRAY + "%(message)s" + END)
         handler1 = logging.StreamHandler(sys.stdout)
         handler1.setFormatter(formatter)
         root_logger.addHandler(handler1)
