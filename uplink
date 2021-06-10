@@ -110,7 +110,7 @@ def get_data(config, inc):
                               password=config["database_password"],
                               database=config["database"])
     except Exception as err:
-        logger.error(RED + "ERROR: Database connection failed!" + str(err) + END)
+        logger.error("ERROR: Database connection failed!" + str(err))
         # see https://stackoverflow.com/questions/1489669/how-to-exit-the-entire-application-from-a-python-thread
         # maybe the following is better. need to evaluate:
         # thread.interrupt_main()
@@ -138,10 +138,10 @@ def get_data(config, inc):
 
     if fc.is_connected:
         status = "UP"
-        logger.info(GREEN + config["uplinks"][inc]["provider"] + " " + status + END)
     else:
         status = "DOWN"
-        logger.info(RED + config["uplinks"][inc]["provider"] + " " + status + END)
+
+    logger.info(config["uplinks"][inc]["provider"] + " " + status)
 
     sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
           'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
@@ -194,15 +194,20 @@ if __name__ == "__main__":
         handler2.setFormatter(formatter)
         root_logger.addHandler(handler2)
 
-    if args.stdout or args.logfile:
-        root_logger.setLevel(args.loglevel)
+    #if args.stdout or args.logfile:
+    root_logger.setLevel(args.loglevel)
 
     config_path = args.config
-    with open(config_path, 'r') as configfile:
-        config_data = configfile.read()
-    _config = json.loads(config_data)
+    try:
+        with open(config_path, 'r') as configfile:
+            config_data = configfile.read()
+        _config = json.loads(config_data)
+    except Exception as err:
+        logger.error("ERROR: Reading configuration file '" + config_path + "' failed!: " + str(err))
+        exit(1)
+
     try:
         run(_config)
     except KeyboardInterrupt:
-        logger.info(RED + "uplink terminated!" + END)
+        logger.info("uplink terminated!")
         exit(0)
