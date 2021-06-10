@@ -36,7 +36,7 @@ from fritzconnection.lib.fritzstatus import FritzStatus
 from threading import Thread
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 logger = logging.getLogger(__name__)
 
@@ -111,9 +111,6 @@ def get_data(config, inc):
                               database=config["database"])
     except Exception as err:
         logger.error("Database connection failed: " + str(err))
-        # see https://stackoverflow.com/questions/1489669/how-to-exit-the-entire-application-from-a-python-thread
-        # maybe the following is better. need to evaluate:
-        # thread.interrupt_main()
         exit(1)
 
     timestamp = calendar.timegm(time.gmtime())
@@ -175,7 +172,6 @@ def run(config):
 if __name__ == "__main__":
     args = parse_args()
 
-    #if args.stdout or args.logfile:
     root_logger = logging.getLogger()
 
     if args.stdout:
@@ -194,7 +190,6 @@ if __name__ == "__main__":
         handler2.setFormatter(formatter)
         root_logger.addHandler(handler2)
 
-    #if args.stdout or args.logfile:
     root_logger.setLevel(args.loglevel)
 
     config_path = args.config
