@@ -28,6 +28,7 @@ import logging.handlers
 import os
 import os.path as path
 import pymysql
+import socket
 import sys
 import time
 
@@ -124,10 +125,11 @@ def get_data(config, inc):
         fc = FritzStatus(address=config["uplinks"][inc]["ip"], password=config["uplinks"][inc]["password"])
     except Exception as err:
         logger.error("ERROR: " + str(err) + " on device with ip:" + config["uplinks"][inc]["ip"])
-        sql = 'INSERT INTO log (timestamp, date, time, internal_ip, is_linked, is_connected, provider, message) ' \
-              'VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
+        sql = 'INSERT INTO log (timestamp, date, time, internal_ip, is_linked, is_connected, provider, message, ' \
+              'source_host)  VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
               str(config["uplinks"][inc]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"' + \
-              str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\")'
+              str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\",\"' + socket.gethostname() + \
+              '\")'
         logging.debug(sql)
         with con.cursor() as cur:
             cur.execute(sql)
@@ -143,14 +145,15 @@ def get_data(config, inc):
     sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
           'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
           'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, modelname, ' \
-          'system_version, provider, message) VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + \
-          '\",\"' + str(fc.uptime) + '\",\"' + str(config["uplinks"][inc]["ip"]) + '\",\"' + str(fc.external_ip) + \
-          '\",\"' + str(fc.external_ipv6) + '\",\"' + str(int(fc.is_linked)) + '\",\"' + \
+          'system_version, provider, message, source_host) VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + \
+          str(t) + '\",\"' + str(fc.uptime) + '\",\"' + str(config["uplinks"][inc]["ip"]) + '\",\"' + \
+          str(fc.external_ip) + '\",\"' + str(fc.external_ipv6) + '\",\"' + str(int(fc.is_linked)) + '\",\"' + \
           str(int(fc.is_connected)) + '\",\"' + str(fc.str_transmission_rate[0]) + '\",\"' + \
           str(fc.str_transmission_rate[1]) + '\",\"' + str(fc.str_max_bit_rate[0]) + '\",\"' + \
           str(fc.str_max_bit_rate[1]) + '\",\"' + str(fc.str_max_linked_bit_rate[0]) + '\",\"' + \
           str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
-          str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\")'
+          str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\",\"' + \
+          socket.gethostname() + '\")'
     logging.debug(sql)
     with con.cursor() as cur:
         cur.execute(sql)
