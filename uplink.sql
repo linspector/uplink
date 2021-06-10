@@ -18,6 +18,7 @@ CREATE TABLE `log` (
   `modelname` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `system_version` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `message` varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `source_host` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
