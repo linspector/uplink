@@ -130,7 +130,7 @@ def get_data(config, inc):
               str(config["uplinks"][inc]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"' + \
               str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\",\"' + socket.gethostname() + \
               '\")'
-        logging.debug(sql)
+        logger.debug(sql)
         with con.cursor() as cur:
             cur.execute(sql)
         con.commit()
@@ -154,7 +154,7 @@ def get_data(config, inc):
           str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
           str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\",\"' + \
           socket.gethostname() + '\")'
-    logging.debug(sql)
+    logger.debug(sql)
     with con.cursor() as cur:
         cur.execute(sql)
     con.commit()
