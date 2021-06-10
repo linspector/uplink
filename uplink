@@ -36,7 +36,7 @@ from fritzconnection.lib.fritzstatus import FritzStatus
 from threading import Thread
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             config_data = configfile.read()
         _config = json.loads(config_data)
     except Exception as err:
-        logger.error("Reading configuration file '" + config_path + "' failed!: " + str(err))
+        logger.error("Reading configuration file '" + config_path + "' failed: " + str(err))
         exit(1)
 
     try:
