@@ -1,8 +1,6 @@
 # uplink - is not some program expecting uplinks to work!
 
-**THIS CODE IS AT A VERY EARLY STAGE OF DEVELOPMENT! USE AT YOUR OWN RISK!**
-
-**SINCE THIS CODE CHANGES EVERY DAY THE DOCUMENTATION MAY NOT BE CORRECT!**
+**This README file is not up to date! It will be fixed soon to explain the installation and the usage of uplink.**
 
 uplink is a tool to monitor the uplink status of AVM FRITZ!Box Cable and DSL based routers. It uses the TR-064 protocol over UPnP.
 
