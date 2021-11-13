@@ -16,7 +16,7 @@ import atexit
 import signal
 
 
-# TODO.md: Check why pid files are not being deleted when sending the TERM signal
+# TODO: Check why pid files are not being deleted when sending the TERM signal
 class Daemon:
 
 	def __init__(self, pid_file):

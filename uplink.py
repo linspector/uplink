@@ -17,14 +17,14 @@ class Uplink(Daemon):
     @staticmethod
     def get_data(config, inc):
         try:
-            # TODO.md: Think about using a DB ORM (SQLAlchemy?) to make this program supporting different databases like
+            # TODO: Think about using a DB ORM (SQLAlchemy?) to make this program supporting different databases like
             #  sqlite and Postgres
             con = pymysql.connect(host=config["database_host"],
                                   user=config["database_user"],
                                   password=config["database_password"],
                                   database=config["database"])
         except Exception as err:
-            # TODO.md: Replace all lines like this with generic Python logging
+            # TODO: Replace all lines like this with generic Python logging
             print(str("Uplink: Database connection failed: " + str(err)))
             exit(1)
 
@@ -36,16 +36,16 @@ class Uplink(Daemon):
         try:
             fc = FritzStatus(address=config["uplinks"][inc]["ip"], password=config["uplinks"][inc]["password"])
         except Exception as err:
-            # TODO.md: Replace all lines like this with generic Python logging
+            # TODO: Replace all lines like this with generic Python logging
             print(str(str(err) + " on device with ip: " + config["uplinks"][inc]["ip"]))
-            # TODO.md: Fix to long lines and make the SQL statement more readable
+            # TODO: Fix to long lines and make the SQL statement more readable
             sql = 'INSERT INTO log (timestamp, date, time, internal_ip, is_linked, is_connected, provider, message, ' \
                   'source_host)  VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
                   str(config["uplinks"][inc]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"' + \
                   str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\",\"' + socket.gethostname() + \
                   '\")'
 
-            # TODO.md: Replace all lines like this with generic Python logging
+            # TODO: Replace all lines like this with generic Python logging
             print(str(sql))
             with con.cursor() as cur:
                 cur.execute(sql)
@@ -57,10 +57,10 @@ class Uplink(Daemon):
         else:
             status = "DOWN"
 
-        # TODO.md: Replace all lines like this with generic Python logging
+        # TODO: Replace all lines like this with generic Python logging
         print(str(config["uplinks"][inc]["provider"] + " " + status))
 
-        # TODO.md: Fix to long lines and make the SQL statement more readable
+        # TODO: Fix to long lines and make the SQL statement more readable
         sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
               'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
               'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, modelname, ' \
@@ -74,7 +74,7 @@ class Uplink(Daemon):
               str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\",\"' + \
               socket.gethostname() + '\")'
 
-        # TODO.md: Replace all lines like this with generic Python logging
+        # TODO: Replace all lines like this with generic Python logging
         print(str(sql))
         with con.cursor() as cur:
             cur.execute(sql)

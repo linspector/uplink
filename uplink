@@ -29,15 +29,15 @@ from uplink import Uplink
 # Version format: MAJOR.FEATURE.FIXES
 __version__ = "0.3.0-development"
 
-# TODO.md: Implement logging
-# TODO.md: Implement --no-daemon for a single run e.g. "cron mode"
-# TODO.md: Implement CLI output messages
-# TODO.md: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
+# TODO: Implement logging
+# TODO: Implement --no-daemon for a single run e.g. "cron mode"
+# TODO: Implement CLI output messages
+# TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
 #  separate daemon
 
 
-# TODO.md: Make use of the args passed to the script
-# TODO.md: Cleanup args and reduce to only what makes sense
+# TODO: Make use of the args passed to the script
+# TODO: Cleanup args and reduce to only what makes sense
 def parse_args():
     parser = argparse.ArgumentParser(
         description="uplink is a tool to monitor the link status of AVM FRITZ!Box Cable and DSL based routers.",
@@ -97,16 +97,16 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
-    # TODO.md: Read --version argument and print program version; then exit.
+    # TODO: Read --version argument and print program version; then exit.
 
-    # TODO.md: Cleanup config.json and only define what really is needed
+    # TODO: Cleanup config.json and only define what really is needed
     config_path = args.config
     try:
         with open(config_path, 'r') as configfile:
             config_data = configfile.read()
         _config = json.loads(config_data)
     except Exception as err:
-        # TODO.md: Replace all lines like this with generic Python logging
+        # TODO: Replace all lines like this with generic Python logging
         print(str("Uplink: Configuration Error!"))
         exit(1)
 
