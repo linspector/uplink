@@ -1,4 +1,6 @@
 .idea
+.run
+__pycache__
 config.json
-uplink.iml
 log/*.log*
+uplink.iml
