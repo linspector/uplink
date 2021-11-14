@@ -11,9 +11,10 @@ For now I can say that uplink can monitor the status of you FRITZ!Box uplinks. I
 ## Requirements
 
  - Git (only for installing from Git repository)
- - Python3 (running for me using 3.7.3 on Raspbian 10 and 3.8.5 on Arch Linux) 
+ - Python3 (running for me using 3.7.3, 3.8.5 and 3.9.7 on Linux) 
  - fritzconnection >= 1.5.0
  - pymysql >= 0.10.1
+ - sqlalchemy = 1.4.27 (not for now)
 
 Just install the 3rd party dependencies using `pip install $PACKAGE` or your OS package manager
 ## Installation
