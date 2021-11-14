@@ -25,16 +25,17 @@ import calendar
 import json
 import logging
 import logging.handlers
-import os
-import os.path as path
 import pymysql
 import socket
-import sys
 import time
 
-from fritzconnection.lib.fritzstatus import FritzStatus
+try:
+    from fritzconnection.fritzconnection.lib.fritzstatus import FritzStatus
+except ImportError:
+    from fritzconnection.lib.fritzstatus import FritzStatus
+
 from threading import Thread
-from daemon import Daemon
+from uplink.daemon import Daemon
 
 # Version format: MAJOR.FEATURE.FIXES
 __version__ = "0.3.0"

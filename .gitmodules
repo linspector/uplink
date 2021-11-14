@@ -1,0 +1,3 @@
+[submodule "fritzconnection"]
+	path = fritzconnection
+	url = https://github.com/kbr/fritzconnection.git

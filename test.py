@@ -6,13 +6,13 @@ Daemon testing file... Daemons in Python are new to me because I only worked on 
 Let's have some fun... :)
 """
 
-from daemon import Daemon
+from uplink.daemon import Daemon
 
 
 class Test(Daemon):
 
     def __init__(self, pid_file, color, size):
-        # super().__init__(pid_file)
+        super().__init__(pid_file)
         self.pid_file = pid_file
         self.color = color
         self.size = size
@@ -22,5 +22,5 @@ class Test(Daemon):
         return
 
 
-Test = Test("/tmp/uplink.pid", "Red", "XXL")
-Test.start()
+test = Test("/tmp/uplink.pid", "Red", "XXL")
+test.start()
