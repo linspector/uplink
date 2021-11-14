@@ -1,12 +1,12 @@
 # uplink - is not some program expecting uplinks to work!
 
-**This README file is not up-to-date! It will be fixed soon to explain the installation and the usage of uplink.**
+## **This README file is not up-to-date! It will be fixed soon to explain the installation and the usage of uplink.**
 
 uplink is a tool to monitor the uplink status of AVM FRITZ!Box Cable and DSL based routers. It uses the TR-064 protocol over UPnP.
 
 ## Features
 
-For now I can say that uplink can monitor the status of you FRITZ!Box uplinks. It can log to a file and writes results to a MariaDB/MySQL database. With some editing of the code you can you use SQLite too but this feature is not active at the moment. This will change in the future. I switched to MariaDB because I run uplink on a RaspberryPi and are evaluating results on my workstation. I am working on a Gtk+ frontend to generate statistics...
+For now, I can say that uplink can monitor the status of you FRITZ!Box uplinks. It can log to a file and writes results to a MariaDB/MySQL database. With some editing of the code you can you use SQLite too but this feature is not active at the moment. This will change in the future. I switched to MariaDB because I run uplink on a RaspberryPi and are evaluating results on my workstation. I am working on a Gtk+ frontend to generate statistics...
 
 ## Requirements
 
