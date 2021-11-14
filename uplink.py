@@ -32,12 +32,13 @@ __version__ = "0.3.0-development"
 # TODO: Implement logging
 # TODO: Implement --no-daemon for a single run e.g. "cron mode"
 # TODO: Implement CLI output messages
+# TODO: Add hourly speed-tests'
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
 #  separate daemon
-
-
 # TODO: Make use of the args passed to the script
 # TODO: Cleanup args and reduce to only what makes sense
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="uplink is a tool to monitor the link status of AVM FRITZ!Box Cable and DSL based routers.",
