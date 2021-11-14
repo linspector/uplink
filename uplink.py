@@ -24,6 +24,8 @@ import argparse
 import json
 import logging
 import logging.handlers
+import sys
+
 from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
@@ -109,7 +111,7 @@ if __name__ == "__main__":
     except Exception as err:
         # TODO: Replace all lines like this with generic Python logging
         print(str("Uplink: Configuration Error!"))
-        exit(1)
+        sys.exit(1)
 
     uplink = Uplink("/tmp/uplink.pid", _config)
     uplink.start()
