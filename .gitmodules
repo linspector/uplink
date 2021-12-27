@@ -1,9 +1,3 @@
 [submodule "fritzconnection"]
 	path = fritzconnection
 	url = https://github.com/kbr/fritzconnection.git
-[submodule "sqlalchemy"]
-	path = sqlalchemy
-	url = https://github.com/sqlalchemy/sqlalchemy.git
-[submodule "urwid"]
-	path = urwid
-	url = https://github.com/urwid/urwid.git
