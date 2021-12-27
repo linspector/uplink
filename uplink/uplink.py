@@ -70,7 +70,7 @@ class Uplink(Daemon):
                   '\")'
 
             # TODO: Replace all lines like this with generic Python logging
-            print(str(sql))
+            # print(str(sql))
             with con.cursor() as cur:
                 cur.execute(sql)
             con.commit()
@@ -99,7 +99,7 @@ class Uplink(Daemon):
               socket.gethostname() + '\")'
 
         # TODO: Replace all lines like this with generic Python logging
-        print(str(sql))
+        # print(str(sql))
         with con.cursor() as cur:
             cur.execute(sql)
         con.commit()
