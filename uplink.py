@@ -35,10 +35,10 @@ __version__ = "0.4.0-development"
 # TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: Implement logging
 # TODO: Implement CLI output messages
-# TODO: Add hourly speed-tests'
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
 #  separate daemon
 # TODO: Make use of more args passed to the script
+# TODO: Implement a speedtest that will also run regularly but in an individual interval
 
 
 def parse_args():
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         _config = json.loads(config_data)
     except "OSError, PermissionDenied, RuntimeError, ValueError" as err:
         # TODO: Replace all lines like this with generic Python logging
-        print(str("Uplink: Configuration Error!"))
+        print(str("Uplink: Configuration Error!" + err))
         sys.exit(1)
 
     try:
