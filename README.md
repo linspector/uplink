@@ -61,6 +61,8 @@ Edit config.json to your needs.
     TODO
    For now there is only the file uplink.sql which will create the tables in your MariaDB/MySQL database.
 
+   The file is under files/uplink.sql
+
 ## Usage
 
     ./uplink [-c | -d | -f] ./config.json 
@@ -98,10 +100,9 @@ There will be a Gtk+ frontend to uplink at some time but this project is at a ve
 - A lot... :)
 - Make all config vars as ARGS and vice versa. ARGS have higher priority. Chain: default -> config -> ARGS.
 - Bring back SQLite support.
-- Switch to ORM (peewee, sqlalchemy?) to support PostgreSQL, MariaDB/MySQL, SQLite and more.
+- Switch to ORM (peewee, sqlalchemy?) to support PostgreSQL, MariaDB/MySQL, SQLite and maybe more databases.
 - Gtk+/urwid frontend for visualizing the collected data. wxGlade?
 - A tool to generate reports for showing to your uplink provider.
 - Always keep platform independence in mind but not if uplink looses nice features on Linux.
 - Implement a speedtest feature to regularly run speedtest but independent to uptime checks with different interval.
 - A small embedded webserver to view what is going on.
-- Real file based logging

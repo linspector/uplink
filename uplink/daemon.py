@@ -1,4 +1,6 @@
 """
+Generic linux daemon base class for python 3.x.
+
 Original Source:
 https://web.archive.org/web/20131017130434/http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
 https://web.archive.org/web/20131017130434/http://www.jejik.com/files/examples/daemon3x.py
@@ -9,40 +11,57 @@ https://franklingu.github.io/programming/2016/03/01/creating-daemon-process-pyth
 https://dpbl.wordpress.com/2017/02/12/a-tutorial-on-python-daemon/
 """
 
+from logging import getLogger
 import sys
 import os
 import time
 import atexit
 import signal
 
+logger = getLogger(__name__)
+
 
 # TODO: Check why pid files are not being deleted when sending the TERM signal
 class Daemon:
+    """
+    A generic daemon class.
+
+    Usage: subclass the daemon class and override the run() method.
+    """
 
     def __init__(self, pid_file):
         self.pid_file = pid_file
 
     def daemonize(self):
+        """
+        Deamonize class. UNIX double fork mechanism.
+        """
+
         try:
             pid = os.fork()
             if pid > 0:
+                # exit first parent
                 sys.exit(0)
         except OSError as err:
-            sys.stderr.write('fork #1 failed: {0}\n'.format(err))
+            logger.error('fork #1 failed: {0}\n'.format(err))
             sys.exit(1)
 
+        # decouple from parent environme
         os.chdir('/')
         os.setsid()
         os.umask(0)
 
+        # do second fork
         try:
             pid = os.fork()
             if pid > 0:
+                # exit from second parent
                 sys.exit(0)
         except OSError as err:
-            sys.stderr.write('fork #2 failed: {0}\n'.format(err))
+            logger.error('fork #2 failed: {0}\n'.format(err))
             sys.exit(1)
 
+        # redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
         si = open(os.devnull, 'r')
@@ -53,6 +72,7 @@ class Daemon:
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
+        # write pidfile
         atexit.register(self.del_pid)
 
         pid = str(os.getpid())
@@ -63,6 +83,11 @@ class Daemon:
         os.remove(self.pid_file)
 
     def start(self):
+        """
+        Start the daemon.
+        """
+
+        # Check for a pidfile to see if the daemon already runs
         try:
             with open(self.pid_file, 'r') as pf:
                 pid = int(pf.read().strip())
@@ -71,13 +96,19 @@ class Daemon:
 
         if pid:
             message = "pid_file {0} already exist. Daemon already running?\n"
-            sys.stderr.write(message.format(self.pid_file))
+            logger.error(message.format(self.pid_file))
             sys.exit(1)
 
+        # Start the daemon
         self.daemonize()
         self.run()
 
     def stop(self):
+        """
+        Stop the daemon.
+        """
+
+        # Get the pid from the pidfile
         try:
             with open(self.pid_file, 'r') as pf:
                 pid = int(pf.read().strip())
@@ -86,9 +117,11 @@ class Daemon:
 
         if not pid:
             message = "pid_file {0} does not exist. Daemon not running?\n"
-            sys.stderr.write(message.format(self.pid_file))
+            logger.error(message.format(self.pid_file))
+            # not an error in a restart
             return
 
+        # Try killing the daemon process
         try:
             while 1:
                 os.kill(pid, signal.SIGTERM)
@@ -99,14 +132,19 @@ class Daemon:
                 if os.path.exists(self.pid_file):
                     os.remove(self.pid_file)
             else:
-                print(str(err.args))
+                logger.error(str(err.args))
                 sys.exit(1)
 
     def restart(self):
+        """
+        Restart the daemon.
+        """
         self.stop()
         self.start()
 
     def run(self):
-        """Override this method when you subclass Daemon.
+        """
+        Override this method when you subclass Daemon.
         It will be called after the process has been daemonized by
-        start() or restart()."""
+        start() or restart().
+        """

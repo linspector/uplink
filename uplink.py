@@ -35,8 +35,8 @@ from uplink.uplink import Uplink
 __version__ = "0.5.0-development"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
-# TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
-#  separate daemon
+# TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network?
+#  Or maybe better as a separate daemon
 # TODO: Make use of more args passed to the script
 # TODO: Implement a speedtest that will also run regularly but in an individual interval
 
@@ -79,7 +79,7 @@ def parse_args():
                         help="maximum number of logfiles in rotation (default: 5)")
 
     parser.add_argument("-m", "--logsize", default=10485760, type=int,
-                        help="maximum logfile size in bytes (default: 10485760)")
+                        help="maximum logfile size in bytes (default: 1048576)")
 
     parser.add_argument("-s", "--stdout", default=False, dest="stdout", action="store_true",
                         help="log to stdout")
@@ -127,7 +127,6 @@ def main():
 
     root_logger.setLevel(args.loglevel)
 
-    # TODO: Cleanup config.json and only define what really is needed
     config_path = args.config
     try:
         with open(config_path, 'r', encoding='utf-8') as configfile:
@@ -162,7 +161,7 @@ def main():
                 t.start()
             try:
                 time.sleep(config["interval"])
-            except KeyboardInterrupt as err:
+            except KeyboardInterrupt:
                 logger.info(str("uplink: program terminated by user!"))
                 sys.exit(0)
     else:
