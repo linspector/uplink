@@ -22,23 +22,23 @@
 
 import argparse
 import json
-import logging
-import logging.handlers
+# import logging
+# import logging.handlers
 import sys
+import time
 
 from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.3.0-development"
+__version__ = "0.4.0-development"
 
+# TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: Implement logging
-# TODO: Implement --no-daemon for a single run e.g. "cron mode"
 # TODO: Implement CLI output messages
 # TODO: Add hourly speed-tests'
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
 #  separate daemon
-# TODO: Make use of the args passed to the script
-# TODO: Cleanup args and reduce to only what makes sense
+# TODO: Make use of more args passed to the script
 
 
 def parse_args():
@@ -50,18 +50,19 @@ def parse_args():
     parser.add_argument("config", metavar="CONFIGFILE", help="the configfile to use")
 
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--cron", default=False, dest="cron", action="store_true",
+    mode.add_argument("-c", "--cron", default=False, dest="cron", action="store_true",
                       help="cron mode executes the script only once without loop (default: false)")
 
-    mode.add_argument("--daemon", default=False, dest="daemon", action="store_true",
+    mode.add_argument("-d", "--daemon", default=False, dest="daemon", action="store_true",
                       help="run as native daemon (default: false)")
 
-    mode.add_argument("--foreground", default=True, dest="foreground", action="store_true",
-                      help="run in foreground (default: true)")
+    mode.add_argument("-f", "--foreground", default=False, dest="foreground", action="store_true",
+                      help="run looped in foreground (default: false)")
 
-    parser.add_argument("-i", "--interval", default=60, type=int,
-                        help="seconds poll interval (default: 60)")
+    parser.add_argument("-i", "--interval", type=int, help="poll interval in seconds. this overrides config file "
+                                                           "settings. (default: 60)")
 
+    """
     parser.add_argument("-b", "--database", metavar="DATABASE", help="database to use")
 
     parser.add_argument("-u", "--user", type=str, help="database username")
@@ -91,6 +92,7 @@ def parse_args():
     output.add_argument("-d", "--debug", action="store_const", dest="log_level", const=logging.DEBUG,
                         help="output debug messages")
     output.set_defaults(loglevel=logging.ERROR)
+    """
 
     parser.add_argument("--version", action="version", version="%(prog)s " + str(__version__))
 
@@ -108,10 +110,35 @@ if __name__ == "__main__":
         with open(config_path, 'r') as configfile:
             config_data = configfile.read()
         _config = json.loads(config_data)
-    except Exception as err:
+    except "OSError, PermissionDenied, RuntimeError, ValueError" as err:
         # TODO: Replace all lines like this with generic Python logging
         print(str("Uplink: Configuration Error!"))
         sys.exit(1)
 
+    try:
+        _config["interval"]
+    except KeyError:
+        # interval not configured in configuration; using default value
+        _config["interval"] = 60
+
+    if args.interval:
+        # interval set in args is overriding configuration and default
+        _config["interval"] = args.interval
+
     uplink = Uplink("/tmp/uplink.pid", _config)
-    uplink.start()
+
+    if args.cron:
+        for i in range(len(_config["uplinks"])):
+            uplink.get_data(_config, i)
+    elif args.daemon:
+        uplink.start()
+    elif args.foreground:
+        while True:
+            for i in range(len(_config["uplinks"])):
+                uplink.get_data(_config, i)
+                # TODO: print data formatted to STDOUT
+            time.sleep(_config["interval"])
+    else:
+
+        print("uplink: error: no run mode selected; use --cron (-c), --daemon (-d) or --foreground (-f) to run uplink. "
+              "use --help for more information")
