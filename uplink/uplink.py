@@ -113,6 +113,4 @@ class Uplink(Daemon):
             for i in range(len(self.config["uplinks"])):
                 t = Thread(target=self.get_data, args=(self.get_config(), i))
                 t.start()
-            if self.config["cron"]:
-                break
             time.sleep(self.config["interval"])

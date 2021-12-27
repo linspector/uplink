@@ -30,7 +30,7 @@ import time
 from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.4.0-development"
+__version__ = "0.4.1-development"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: Implement logging
@@ -109,35 +109,39 @@ if __name__ == "__main__":
     try:
         with open(config_path, 'r') as configfile:
             config_data = configfile.read()
-        _config = json.loads(config_data)
+        config = json.loads(config_data)
     except "OSError, PermissionDenied, RuntimeError, ValueError" as err:
         # TODO: Replace all lines like this with generic Python logging
         print(str("Uplink: Configuration Error!" + err))
         sys.exit(1)
 
     try:
-        _config["interval"]
+        config["interval"]
     except KeyError:
         # interval not configured in configuration; using default value
-        _config["interval"] = 60
+        config["interval"] = 60
 
     if args.interval:
         # interval set in args is overriding configuration and default
-        _config["interval"] = args.interval
+        config["interval"] = args.interval
 
-    uplink = Uplink("/tmp/uplink.pid", _config)
+    uplink = Uplink("/tmp/uplink.pid", config)
 
     if args.cron:
-        for i in range(len(_config["uplinks"])):
-            uplink.get_data(_config, i)
+        for i in range(len(config["uplinks"])):
+            uplink.get_data(config, i)
     elif args.daemon:
         uplink.start()
     elif args.foreground:
         while True:
-            for i in range(len(_config["uplinks"])):
-                uplink.get_data(_config, i)
+            for i in range(len(config["uplinks"])):
+                uplink.get_data(config, i)
                 # TODO: print data formatted to STDOUT
-            time.sleep(_config["interval"])
+            try:
+                time.sleep(config["interval"])
+            except KeyboardInterrupt as err:
+                print(str("uplink: program terminated by user!"))
+                exit(0)
     else:
 
         print("uplink: error: no run mode selected; use --cron (-c), --daemon (-d) or --foreground (-f) to run uplink. "
