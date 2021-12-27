@@ -18,8 +18,9 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import pymysql
+
 import socket
+import sys
 import time
 import calendar
 
@@ -29,12 +30,14 @@ except ImportError:
     from fritzconnection.lib.fritzstatus import FritzStatus
 
 from threading import Thread
+import pymysql
 from uplink.daemon import Daemon
 
 
 class Uplink(Daemon):
 
     def __init__(self, pid_file, config):
+        super().__init__(pid_file)
         self.pid_file = pid_file
         self.config = config
 
@@ -50,7 +53,7 @@ class Uplink(Daemon):
         except Exception as err:
             # TODO: Replace all lines like this with generic Python logging
             print(str("Uplink: Database connection failed: " + str(err)))
-            exit(1)
+            sys.exit(1)
 
         timestamp = calendar.timegm(time.gmtime())
         local_time = time.localtime(timestamp)
@@ -74,7 +77,7 @@ class Uplink(Daemon):
             with con.cursor() as cur:
                 cur.execute(sql)
             con.commit()
-            exit(1)
+            sys.exit(1)
 
         if fc.is_connected:
             status = "UP"

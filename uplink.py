@@ -110,9 +110,9 @@ if __name__ == "__main__":
         with open(config_path, 'r') as configfile:
             config_data = configfile.read()
         config = json.loads(config_data)
-    except "OSError, PermissionDenied, RuntimeError, ValueError" as err:
+    except Exception as err:
         # TODO: Replace all lines like this with generic Python logging
-        print(str("Uplink: Configuration Error!" + err))
+        print(str("Uplink: Configuration Error!" + str(err)))
         sys.exit(1)
 
     try:
@@ -141,8 +141,7 @@ if __name__ == "__main__":
                 time.sleep(config["interval"])
             except KeyboardInterrupt as err:
                 print(str("uplink: program terminated by user!"))
-                exit(0)
+                sys.exit(0)
     else:
-
-        print("uplink: error: no run mode selected; use --cron (-c), --daemon (-d) or --foreground (-f) to run uplink. "
-              "use --help for more information")
+        print("uplink: error: no run mode selected; use --cron (-c), --daemon (-d) or "
+              "--foreground (-f) to run uplink. use --help for more information")
