@@ -54,7 +54,7 @@ class Uplink(Daemon):
 
         timestamp = calendar.timegm(time.gmtime())
         local_time = time.localtime(timestamp)
-        d = time.strftime("%Y-%m-%d ", local_time)
+        d = time.strftime("%Y-%m-%d", local_time)
         t = time.strftime("%H:%M:%S", local_time)
 
         try:
@@ -82,7 +82,7 @@ class Uplink(Daemon):
             status = "DOWN"
 
         # TODO: Replace all lines like this with generic Python logging
-        print(str("[" + str(d) + str(t) + "] " +config["uplinks"][inc]["provider"] + " " + status))
+        print(str("[" + str(d) + " " + str(t) + "] " +config["uplinks"][inc]["provider"] + " " + status))
 
         # TODO: Fix to long lines and make the SQL statement more readable
         sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
