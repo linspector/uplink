@@ -22,8 +22,9 @@
 
 import argparse
 import json
-# import logging
-# import logging.handlers
+import logging
+import logging.handlers
+import os
 import sys
 import time
 
@@ -31,15 +32,15 @@ from threading import Thread
 from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.4.2-development"
+__version__ = "0.5.0-development"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
-# TODO: Implement logging
-# TODO: Implement CLI output messages
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network? Or maybe better as a
 #  separate daemon
 # TODO: Make use of more args passed to the script
 # TODO: Implement a speedtest that will also run regularly but in an individual interval
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -71,51 +72,69 @@ def parse_args():
     parser.add_argument("-u", "--user", type=str, help="database username")
 
     parser.add_argument("-p", "--password", type=str, help="database password")
-
+    """
     parser.add_argument("-l", "--logfile", metavar="FILE", help="logfile to use")
 
-    parser.add_argument("-c", "--log-count", default=5, type=int,
+    parser.add_argument("-n", "--logcount", default=5, type=int,
                         help="maximum number of logfiles in rotation (default: 5)")
 
-    parser.add_argument("-m", "--log-size", default=10485760, type=int,
+    parser.add_argument("-m", "--logsize", default=10485760, type=int,
                         help="maximum logfile size in bytes (default: 10485760)")
 
-    parser.add_argument("-s", "--stdout", default=False, dest="stdout", action="store_true", help="log to stdout")
+    parser.add_argument("-s", "--stdout", default=False, dest="stdout", action="store_true",
+                        help="log to stdout")
 
     output = parser.add_mutually_exclusive_group()
-    output.add_argument("-q", "--quiet", action="store_const", dest="log_level", const=logging.ERROR,
-                        help="output only errors")
+    output.add_argument("-q", "--quiet", action="store_const", dest="loglevel",
+                        const=logging.ERROR, help="output only errors")
 
-    output.add_argument("-w", "--warning", action="store_const", dest="log_level", const=logging.WARNING,
-                        help="output warnings")
+    output.add_argument("-w", "--warning", action="store_const", dest="loglevel",
+                        const=logging.WARNING, help="output warnings")
 
-    output.add_argument("-v", "--verbose", action="store_const", dest="log_level", const=logging.INFO,
-                        help="output info messages")
+    output.add_argument("-v", "--verbose", action="store_const", dest="loglevel",
+                        const=logging.INFO, help="output info messages")
 
-    output.add_argument("-d", "--debug", action="store_const", dest="log_level", const=logging.DEBUG,
-                        help="output debug messages")
+    output.add_argument("-e", "--debug", action="store_const", dest="loglevel",
+                        const=logging.DEBUG, help="output debug messages")
     output.set_defaults(loglevel=logging.ERROR)
-    """
 
     parser.add_argument("--version", action="version", version="%(prog)s " + str(__version__))
 
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
 
-    # TODO: Read --version argument and print program version; then exit.
+    root_logger = logging.getLogger()
+
+    if args.logfile:
+        logfile = os.path.expanduser(args.logfile)
+        if not os.path.exists(os.path.dirname(logfile)):
+            os.makedirs(os.path.dirname(logfile))
+
+        formatter1 = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(message)s")
+        handler1 = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=args.logsize,
+                                                        backupCount=args.logcount)
+        handler1.setFormatter(formatter1)
+        root_logger.addHandler(handler1)
+
+    if args.stdout:
+        formatter2 = logging.Formatter("[%(asctime)s] [%(levelname)s] %(message)s")
+        handler2 = logging.StreamHandler(sys.stdout)
+        handler2.setFormatter(formatter2)
+        root_logger.addHandler(handler2)
+
+    root_logger.setLevel(args.loglevel)
 
     # TODO: Cleanup config.json and only define what really is needed
     config_path = args.config
     try:
-        with open(config_path, 'r') as configfile:
+        with open(config_path, 'r', encoding='utf-8') as configfile:
             config_data = configfile.read()
         config = json.loads(config_data)
     except Exception as err:
-        # TODO: Replace all lines like this with generic Python logging
-        print(str("uplink: Configuration Error! " + str(err)))
+        logger.error(str("uplink: configuration error! " + str(err)))
         sys.exit(1)
 
     try:
@@ -132,20 +151,24 @@ if __name__ == "__main__":
 
     if args.cron:
         for i in range(len(config["uplinks"])):
-            t = Thread(target=uplink.get_data, args=(config, i))
+            t = Thread(target=uplink.fetch_data, args=(config, i))
             t.start()
     elif args.daemon:
         uplink.start()
     elif args.foreground:
         while True:
             for i in range(len(config["uplinks"])):
-                t = Thread(target=uplink.get_data, args=(config, i))
+                t = Thread(target=uplink.fetch_data, args=(config, i))
                 t.start()
             try:
                 time.sleep(config["interval"])
             except KeyboardInterrupt as err:
-                print(str("uplink: program terminated by user!"))
+                logger.info(str("uplink: program terminated by user!"))
                 sys.exit(0)
     else:
-        print("uplink: error: no run mode selected; use --cron (-c), --daemon (-d) or "
-              "--foreground (-f) to run uplink. use --help for more information")
+        logger.error("uplink: no run mode selected; use --cron (-c), --daemon (-d) or "
+                     "--foreground (-f) to run uplink. use --help for more information")
+
+
+if __name__ == "__main__":
+    main()

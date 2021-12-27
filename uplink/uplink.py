@@ -19,6 +19,7 @@
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+from logging import getLogger
 import socket
 import sys
 import time
@@ -33,6 +34,8 @@ from threading import Thread
 import pymysql
 from uplink.daemon import Daemon
 
+logger = getLogger(__name__)
+
 
 class Uplink(Daemon):
 
@@ -40,9 +43,11 @@ class Uplink(Daemon):
         super().__init__(pid_file)
         self.pid_file = pid_file
         self.config = config
+        self.date = None
+        self.time = None
+        self.status = None
 
-    @staticmethod
-    def get_data(config, inc):
+    def fetch_data(self, config, inc):
         try:
             # TODO: Think about using a DB ORM (SQLAlchemy?) to make this program supporting different databases like
             #  sqlite and Postgres
@@ -51,69 +56,60 @@ class Uplink(Daemon):
                                   password=config["database_password"],
                                   database=config["database"])
         except Exception as err:
-            # TODO: Replace all lines like this with generic Python logging
-            print(str("Uplink: Database connection failed: " + str(err)))
+            logger.error(str("uplink: Database connection failed: " + str(err)))
             sys.exit(1)
 
         timestamp = calendar.timegm(time.gmtime())
         local_time = time.localtime(timestamp)
-        d = time.strftime("%Y-%m-%d", local_time)
-        t = time.strftime("%H:%M:%S", local_time)
+        self.date = time.strftime("%Y-%m-%d", local_time)
+        self.time = time.strftime("%H:%M:%S", local_time)
 
         try:
             fc = FritzStatus(address=config["uplinks"][inc]["ip"], password=config["uplinks"][inc]["password"])
         except Exception as err:
-            # TODO: Replace all lines like this with generic Python logging
-            print(str(str(err) + " on device with ip: " + config["uplinks"][inc]["ip"]))
+            logger.error(str(str(err) + " on device with ip: " + config["uplinks"][inc]["ip"]))
             # TODO: Fix to long lines and make the SQL statement more readable
             sql = 'INSERT INTO log (timestamp, date, time, internal_ip, is_linked, is_connected, provider, message, ' \
-                  'source_host)  VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + str(t) + '\",\"' + \
+                  'source_host)  VALUES (\"' + str(timestamp) + '\",\"' + str(self.date) + '\",\"' + str(self.time) + '\",\"' + \
                   str(config["uplinks"][inc]["ip"]) + '\",\"' + "0" + '\",\"' + "0" + '\",\"' + \
                   str(config["uplinks"][inc]["provider"]) + '\",\"ERROR: ' + str(err) + '\",\"' + socket.gethostname() + \
                   '\")'
 
-            # TODO: Replace all lines like this with generic Python logging
-            # print(str(sql))
+            logger.debug(str(sql))
             with con.cursor() as cur:
                 cur.execute(sql)
             con.commit()
             sys.exit(1)
 
         if fc.is_connected:
-            status = "UP"
+            self.status = "UP"
         else:
-            status = "DOWN"
+            self.status = "DOWN"
 
-        # TODO: Replace all lines like this with generic Python logging
-        print(str("[" + str(d) + " " + str(t) + "] " + config["uplinks"][inc]["provider"] + " " + status))
-
+        logger.info(str(config["uplinks"][inc]["provider"] + " " + self.status))
         # TODO: Fix to long lines and make the SQL statement more readable
         sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
               'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
               'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, modelname, ' \
-              'system_version, provider, message, source_host) VALUES (\"' + str(timestamp) + '\",\"' + str(d) + '\",\"' + \
-              str(t) + '\",\"' + str(fc.uptime) + '\",\"' + str(config["uplinks"][inc]["ip"]) + '\",\"' + \
+              'system_version, provider, message, source_host) VALUES (\"' + str(timestamp) + '\",\"' + str(self.date) + '\",\"' + \
+              str(self.time) + '\",\"' + str(fc.uptime) + '\",\"' + str(config["uplinks"][inc]["ip"]) + '\",\"' + \
               str(fc.external_ip) + '\",\"' + str(fc.external_ipv6) + '\",\"' + str(int(fc.is_linked)) + '\",\"' + \
               str(int(fc.is_connected)) + '\",\"' + str(fc.str_transmission_rate[0]) + '\",\"' + \
               str(fc.str_transmission_rate[1]) + '\",\"' + str(fc.str_max_bit_rate[0]) + '\",\"' + \
               str(fc.str_max_bit_rate[1]) + '\",\"' + str(fc.str_max_linked_bit_rate[0]) + '\",\"' + \
               str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
-              str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + status + '\",\"' + \
+              str(fc.fc.system_version) + '\",\"' + str(config["uplinks"][inc]["provider"]) + '\",\"' + self.status + '\",\"' + \
               socket.gethostname() + '\")'
 
-        # TODO: Replace all lines like this with generic Python logging
-        # print(str(sql))
+        logger.debug(str(sql))
         with con.cursor() as cur:
             cur.execute(sql)
         con.commit()
         con.close()
 
-    def get_config(self):
-        return self.config
-
     def run(self):
         while True:
             for i in range(len(self.config["uplinks"])):
-                t = Thread(target=self.get_data, args=(self.get_config(), i))
+                t = Thread(target=self.fetch_data, args=(self.config, i))
                 t.start()
             time.sleep(self.config["interval"])
