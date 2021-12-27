@@ -27,10 +27,11 @@ import json
 import sys
 import time
 
+from threading import Thread
 from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.4.1-development"
+__version__ = "0.4.2-development"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: Implement logging
@@ -43,7 +44,8 @@ __version__ = "0.4.1-development"
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="uplink is a tool to monitor the link status of AVM FRITZ!Box Cable and DSL based routers.",
+        description="uplink is a tool to monitor the link status of AVM FRITZ!Box Cable and DSL "
+                    "based routers.",
         epilog="uplink is not some program expecting uplinks to work!",
         prog="uplink")
 
@@ -59,8 +61,9 @@ def parse_args():
     mode.add_argument("-f", "--foreground", default=False, dest="foreground", action="store_true",
                       help="run looped in foreground (default: false)")
 
-    parser.add_argument("-i", "--interval", type=int, help="poll interval in seconds. this overrides config file "
-                                                           "settings. (default: 60)")
+    parser.add_argument("-i", "--interval", type=int, help="poll interval in seconds. this "
+                                                           "overrides config file settings. "
+                                                           "(default: 60)")
 
     """
     parser.add_argument("-b", "--database", metavar="DATABASE", help="database to use")
@@ -112,7 +115,7 @@ if __name__ == "__main__":
         config = json.loads(config_data)
     except Exception as err:
         # TODO: Replace all lines like this with generic Python logging
-        print(str("Uplink: Configuration Error!" + str(err)))
+        print(str("uplink: Configuration Error! " + str(err)))
         sys.exit(1)
 
     try:
@@ -129,14 +132,15 @@ if __name__ == "__main__":
 
     if args.cron:
         for i in range(len(config["uplinks"])):
-            uplink.get_data(config, i)
+            t = Thread(target=uplink.get_data, args=(config, i))
+            t.start()
     elif args.daemon:
         uplink.start()
     elif args.foreground:
         while True:
             for i in range(len(config["uplinks"])):
-                uplink.get_data(config, i)
-                # TODO: print data formatted to STDOUT
+                t = Thread(target=uplink.get_data, args=(config, i))
+                t.start()
             try:
                 time.sleep(config["interval"])
             except KeyboardInterrupt as err:
