@@ -34,10 +34,13 @@ import xmltodict
 from pathlib import Path
 from threading import Thread
 
+try:
+    from fritzconnection.fritzconnection.lib.fritzstatus import FritzStatus
+except ImportError:
+    from fritzconnection.lib.fritzstatus import FritzStatus
 
 APP_VERSION = '0.0.1'
 APPINDICATOR_ID = 'fritztray'
-
 
 def get_state_icon(state):
     """
