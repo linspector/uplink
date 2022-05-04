@@ -49,8 +49,8 @@ class Uplink(Daemon):
 
     def fetch_data(self, config, inc):
         try:
-            # TODO: Think about using a DB ORM (SQLAlchemy?) to make this program supporting different databases like
-            #  sqlite and Postgres
+            # TODO: Think about using a DB ORM (SQLAlchemy?) to make this program supporting
+            #  different databases like sqlite and Postgres
             con = pymysql.connect(host=config["database_host"],
                                   user=config["database_user"],
                                   password=config["database_password"],
@@ -65,7 +65,8 @@ class Uplink(Daemon):
         self.time = time.strftime("%H:%M:%S", local_time)
 
         try:
-            fc = FritzStatus(address=config["uplinks"][inc]["ip"], password=config["uplinks"][inc]["password"])
+            fc = FritzStatus(address=config["uplinks"][inc]["ip"],
+                             password=config["uplinks"][inc]["password"])
         except Exception as err:
             logger.error(str(str(err) + " on device with ip: " + config["uplinks"][inc]["ip"]))
             # TODO: Fix to long lines and make the SQL statement more readable
