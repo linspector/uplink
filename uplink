@@ -32,7 +32,7 @@ from threading import Thread
 from uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.5.1-development"
+__version__ = "0.5.2"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network?
