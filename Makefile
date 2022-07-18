@@ -30,7 +30,6 @@ targz:
 
 all:
 	make clean
-	make binary
 	make fullbinary
 	make standalone
 	make targz
