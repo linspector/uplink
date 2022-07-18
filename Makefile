@@ -22,11 +22,15 @@ runbin:
 
 targz:
 	rm -rf uplink-bin.tar.gz
-	tar -czf uplink-bin.tar.gz uplink.dist/*
+	tar -czf uplink-bin.tar.gz uplink.dist
+
+tarxz:
+	rm -rf uplink-bin.tar.xz
+	tar -cJf uplink-bin.tar.xz uplink.dist
 
 7z:
-	rm -rf uplink-bin.7z
-	7z a uplink-bin.7z uplink.dist/*
+	rm -rf uplink-bin.tar.xz
+	7z a uplink-bin.tar.7z uplink.dist
 
 all:
 	make clean
