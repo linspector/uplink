@@ -1,6 +1,8 @@
 uplink.bin
 uplink.build
 uplink.dist
+*.7z
+*.tar.gz
 .idea
 .run
 __pycache__
