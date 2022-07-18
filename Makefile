@@ -11,7 +11,8 @@ clean:
 	rm -rf uplink.build/*
 	rm -rf uplink.dist/*
 	rm -rf uplink.bin
-
+	rm -rf uplink-bin.tar.gz
+	rm -rf uplink-bin.7z
 run:
 	./uplink ./config.json -fsv
 
