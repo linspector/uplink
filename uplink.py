@@ -19,20 +19,17 @@
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from logging import getLogger
+import calendar
+import pymysql
 import socket
 import sys
 import time
-import calendar
 
-try:
-    from fritzconnection.fritzconnection.lib.fritzstatus import FritzStatus
-except ImportError:
-    from fritzconnection.lib.fritzstatus import FritzStatus
-
-from threading import Thread
-import pymysql
 from daemon import Daemon
+from fritzconnection.lib.fritzstatus import FritzStatus
+from logging import getLogger
+from threading import Thread
+
 
 logger = getLogger(__name__)
 
