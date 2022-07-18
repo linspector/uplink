@@ -73,7 +73,7 @@ def parse_args():
 
     parser.add_argument("-p", "--password", type=str, help="database password")
     """
-    parser.add_argument("-l", "--logfile", metavar="FILE", help="logfile to use")
+    parser.add_argument("-l", "--logfile", metavar="LOGFILE", help="logfile to use")
 
     parser.add_argument("-n", "--logcount", default=5, type=int,
                         help="maximum number of logfiles in rotation (default: 5)")
