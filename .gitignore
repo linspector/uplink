@@ -1,5 +1,6 @@
 uplink.bin
 uplink.build
+uplink.dist
 .idea
 .run
 __pycache__
