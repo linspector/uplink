@@ -12,3 +12,9 @@ clean:
 	rm -rf uplink.dist/*
 	rm -rf uplink.bin
 
+run:
+	./uplink ./config.json -fsv
+
+runbin:
+	./uplink.dist/uplink ./config.json -fsv
+
