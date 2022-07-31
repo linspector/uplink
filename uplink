@@ -28,7 +28,6 @@ import os
 import sys
 import time
 
-from threading import Thread
 from uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
@@ -149,12 +148,14 @@ def main():
     uplink = Uplink("/tmp/uplink.pid", config)
 
     if args.cron:
+        from threading import Thread
         for i in range(len(config["uplinks"])):
             t = Thread(target=uplink.fetch_data, args=(config, i))
             t.start()
     elif args.daemon:
         uplink.start()
     elif args.foreground:
+        from threading import Thread
         while True:
             for i in range(len(config["uplinks"])):
                 t = Thread(target=uplink.fetch_data, args=(config, i))
