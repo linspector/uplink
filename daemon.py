@@ -21,7 +21,6 @@ import signal
 logger = getLogger(__name__)
 
 
-# TODO: Check why pid files are not being deleted when sending the TERM signal
 class Daemon:
     """
     A generic daemon class.
@@ -46,7 +45,7 @@ class Daemon:
             logger.error('fork #1 failed: {0}\n'.format(err))
             sys.exit(1)
 
-        # decouple from parent environme
+        # decouple from parent environment
         os.chdir('/')
         os.setsid()
         os.umask(0)
@@ -95,7 +94,7 @@ class Daemon:
             pid = None
 
         if pid:
-            message = "pid_file {0} already exist. Daemon already running?\n"
+            message = "pid_file {0} already exist. Daemon already running?"
             logger.error(message.format(self.pid_file))
             sys.exit(1)
 
@@ -116,7 +115,7 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pid_file {0} does not exist. Daemon not running?\n"
+            message = "pid_file {0} does not exist. Daemon not running?"
             logger.error(message.format(self.pid_file))
             # not an error in a restart
             return

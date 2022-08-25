@@ -1,12 +1,11 @@
 {
     "interval": 60,
-    "database_type": "mariadb",
     "database":  "uplink",
     "database_host": "127.0.0.1",
     "database_user": "USER",
     "database_password": "PASSWORD",
     "mode": "cron",
-    "log_level": "ERROR",
+    "log_level": "info",
     "uplinks": [
         { "provider": "Cable Provider", "ip": "192.168.0.1", "password": "1234" },
         { "provider": "DSL Provider", "ip": "192.168.1.1", "password": "1234" }
