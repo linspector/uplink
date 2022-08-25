@@ -33,7 +33,7 @@ class Daemon:
 
     def daemonize(self):
         """
-        Deamonize class. UNIX double fork mechanism.
+        Daemonize class. UNIX double fork mechanism.
         """
 
         try:
