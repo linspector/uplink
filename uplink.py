@@ -30,7 +30,6 @@ from fritzconnection.lib.fritzstatus import FritzStatus
 from logging import getLogger
 from threading import Thread
 
-
 logger = getLogger(__name__)
 
 
@@ -38,7 +37,6 @@ class Uplink(Daemon):
 
     def __init__(self, pid_file, config):
         super().__init__(pid_file)
-        self.pid_file = pid_file
         self.config = config
         self.date = None
         self.time = None
@@ -53,7 +51,7 @@ class Uplink(Daemon):
                                   password=config["database_password"],
                                   database=config["database"])
         except Exception as err:
-            logger.error(str("uplink: Database connection failed: " + str(err)))
+            logger.error(str("uplink: Database connection failed: {0}".format(err)))
             sys.exit(1)
 
         timestamp = calendar.timegm(time.gmtime())

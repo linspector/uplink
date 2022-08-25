@@ -1,30 +1,36 @@
-"""
-Generic linux daemon base class for python 3.x.
+# Copyright (c) 2022 Johannes Findeisen <you@hanez.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is furnished
+# to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+# OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+# OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Original Source:
-https://web.archive.org/web/20131017130434/http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
-https://web.archive.org/web/20131017130434/http://www.jejik.com/files/examples/daemon3x.py
-See files/daemon3x.py in the uplink source tree.
-
-More Information:
-https://franklingu.github.io/programming/2016/03/01/creating-daemon-process-python-example-explanation/
-https://dpbl.wordpress.com/2017/02/12/a-tutorial-on-python-daemon/
-"""
+import atexit
+import os
+import signal
+import sys
+import time
 
 from logging import getLogger
-import sys
-import os
-import time
-import atexit
-import signal
 
 logger = getLogger(__name__)
 
 
 class Daemon:
     """
-    A generic daemon class.
-
     Usage: subclass the daemon class and override the run() method.
     """
 
@@ -33,34 +39,35 @@ class Daemon:
 
     def daemonize(self):
         """
-        Daemonize class. UNIX double fork mechanism.
+        Daemonize the class using the UNIX double fork mechanism.
         """
 
+        # Do first fork
         try:
             pid = os.fork()
             if pid > 0:
-                # exit first parent
+                # Exit first parent
                 sys.exit(0)
         except OSError as err:
-            logger.error('fork #1 failed: {0}\n'.format(err))
+            logger.error(str("fork #1 failed: {0}".format(err)))
             sys.exit(1)
 
-        # decouple from parent environment
+        # Decouple from parent environment
         os.chdir('/')
         os.setsid()
         os.umask(0)
 
-        # do second fork
+        # Do second fork
         try:
             pid = os.fork()
             if pid > 0:
-                # exit from second parent
+                # Exit from second parent
                 sys.exit(0)
         except OSError as err:
-            logger.error('fork #2 failed: {0}\n'.format(err))
+            logger.error(str("fork #2 failed: {0}".format(err)))
             sys.exit(1)
 
-        # redirect standard file descriptors
+        # Redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
         si = open(os.devnull, 'r')
@@ -71,7 +78,7 @@ class Daemon:
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
-        # write pidfile
+        # Write pidfile
         atexit.register(self.del_pid)
 
         pid = str(os.getpid())
@@ -94,8 +101,8 @@ class Daemon:
             pid = None
 
         if pid:
-            message = "pid_file {0} already exist. Daemon already running?"
-            logger.error(message.format(self.pid_file))
+            message = "pid_file {0} already exist. daemon already running?"
+            logger.error(str(message.format(self.pid_file)))
             sys.exit(1)
 
         # Start the daemon
@@ -107,7 +114,7 @@ class Daemon:
         Stop the daemon.
         """
 
-        # Get the pid from the pidfile
+        # Get the pid from the pid_file
         try:
             with open(self.pid_file, 'r') as pf:
                 pid = int(pf.read().strip())
@@ -115,10 +122,9 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pid_file {0} does not exist. Daemon not running?"
-            logger.error(message.format(self.pid_file))
-            # not an error in a restart
-            return
+            message = "pid_file {0} does not exist. daemon not running?"
+            logger.error(str(message.format(self.pid_file)))
+            return  # not an error in a restart
 
         # Try killing the daemon process
         try:
@@ -143,7 +149,8 @@ class Daemon:
 
     def run(self):
         """
-        Override this method when you subclass Daemon.
+        You should override this method when you subclass Daemon.
+
         It will be called after the process has been daemonized by
         start() or restart().
         """

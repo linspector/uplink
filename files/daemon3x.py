@@ -1,4 +1,15 @@
-"""Generic linux daemon base class for python 3.x."""
+"""
+Generic linux daemon base class for python 3.x.
+
+Original Source:
+https://web.archive.org/web/20131017130434/http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+https://web.archive.org/web/20131017130434/http://www.jejik.com/files/examples/daemon3x.py
+See files/daemon3x.py in the uplink source tree.
+
+More Information:
+https://franklingu.github.io/programming/2016/03/01/creating-daemon-process-python-example-explanation/
+https://dpbl.wordpress.com/2017/02/12/a-tutorial-on-python-daemon/
+"""
 
 import sys, os, time, atexit, signal
 
