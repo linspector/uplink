@@ -56,7 +56,7 @@ def parse_args():
                       help="cron mode executes the script only once without loop (default: false)")
 
     mode.add_argument("-d", "--daemon", default=False, dest="daemon", action="store_true",
-                        help="run as native daemon (default: false)")
+                      help="run as native daemon (default: false)")
 
     parser.add_argument("-k", "--kill", default=False, dest="kill", action="store_true",
                         help="kill the daemon if it is running (default: false)")
@@ -68,8 +68,7 @@ def parse_args():
                       help="run looped in foreground (default: false)")
 
     parser.add_argument("-i", "--interval", type=int, help="poll interval in seconds. this "
-                                                           "overrides config file settings. "
-                                                           "(default: 60)")
+                        "overrides config file settings. (default: 60)")
 
     """
     TODO: maybe make database connection information as args... not sure.
