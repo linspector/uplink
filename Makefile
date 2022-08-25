@@ -5,11 +5,11 @@ fullbinary:
 	bash -c "time nuitka3 --follow-imports uplink"
 
 standalone:
-	bash -c "time nuitka3 --follow-imports --standalone uplink"
+	bash -c "time nuitka3 --standalone uplink"
 
 clean:
-	rm -rf uplink.build/*
-	rm -rf uplink.dist/*
+	rm -rf uplink.build
+	rm -rf uplink.dist
 	rm -rf uplink.bin
 	rm -rf uplink-bin.tar.gz
 	rm -rf uplink-bin.7z
