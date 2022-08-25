@@ -31,7 +31,7 @@ import time
 from uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
-__version__ = "0.5.2"
+__version__ = "0.6.0"
 
 # TODO: CHECK ALL ERROR HANDLING!!!
 # TODO: IDEA: Implement a small webserver inline to get statistics and graphs over the network?
