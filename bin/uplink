@@ -28,7 +28,7 @@ import os
 import sys
 import time
 
-from uplink import Uplink
+from uplink.uplink import Uplink
 
 # Version format: MAJOR.FEATURE.FIXES
 __version__ = "0.6.1"

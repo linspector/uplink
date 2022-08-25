@@ -25,7 +25,7 @@ import socket
 import sys
 import time
 
-from daemon import Daemon
+from uplink.daemon import Daemon
 from fritzconnection.lib.fritzstatus import FritzStatus
 from logging import getLogger
 from threading import Thread
