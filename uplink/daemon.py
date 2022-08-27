@@ -49,7 +49,7 @@ class Daemon:
                 # Exit first parent
                 sys.exit(0)
         except OSError as err:
-            logger.error(str("fork #1 failed: {0}".format(err)))
+            logger.error(str('fork #1 failed: {0}'.format(err)))
             sys.exit(1)
 
         # Decouple from parent environment
@@ -64,7 +64,7 @@ class Daemon:
                 # Exit from second parent
                 sys.exit(0)
         except OSError as err:
-            logger.error(str("fork #2 failed: {0}".format(err)))
+            logger.error(str('fork #2 failed: {0}'.format(err)))
             sys.exit(1)
 
         # Redirect standard file descriptors
@@ -101,7 +101,7 @@ class Daemon:
             pid = None
 
         if pid:
-            message = "pid_file {0} already exist. daemon already running?"
+            message = 'pid_file {0} already exist. daemon already running?'
             logger.error(str(message.format(self.pid_file)))
             sys.exit(1)
 
@@ -122,7 +122,7 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pid_file {0} does not exist. daemon not running?"
+            message = 'pid_file {0} does not exist. daemon not running?'
             logger.error(str(message.format(self.pid_file)))
             return  # not an error in a restart
 
@@ -133,7 +133,7 @@ class Daemon:
                 time.sleep(0.1)
         except OSError as err:
             e = str(err.args)
-            if e.find("No such process") > 0:
+            if e.find('no such process') > 0:
                 if os.path.exists(self.pid_file):
                     os.remove(self.pid_file)
             else:
