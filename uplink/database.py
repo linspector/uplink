@@ -51,7 +51,7 @@ class Database:
 
             sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
                   'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
-                  'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, modelname, ' \
+                  'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, model_name, ' \
                   'system_version, provider, message, source_host) VALUES (\"' + str(timestamp) + '\",\"' + str(self.date) + '\",\"' + \
                   str(self.time) + '\",\"' + str(fc.connection_uptime) + '\",\"' + str(ip) + '\",\"' + \
                   str(fc.external_ip) + '\",\"' + str(fc.external_ipv6) + '\",\"' + str(int(fc.is_linked)) + '\",\"' + \
