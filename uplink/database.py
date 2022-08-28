@@ -18,13 +18,9 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import calendar
 import pymysql
-import socket
-import time
 
 from logging import getLogger
-from sqlalchemy import create_engine
 
 logger = getLogger(__name__)
 
@@ -32,35 +28,57 @@ logger = getLogger(__name__)
 class Database:
 
     def __init__(self, configuration):
-        self.configuration = configuration
-        self.date = None
-        self.time = None
-        self.status = None
+        self.__configuration = configuration
 
-    def write_to_db(self, fc, ip, provider, status):
-        timestamp = calendar.timegm(time.gmtime())
-        local_time = time.localtime(timestamp)
-        self.date = time.strftime('%Y-%m-%d', local_time)
-        self.time = time.strftime('%H:%M:%S', local_time)
-
+    def write_model_to_db(self, model):
         try:
-            con = pymysql.connect(host=self.configuration.get_database_host(),
-                                  user=self.configuration.get_database_user(),
-                                  password=self.configuration.get_database_password(),
-                                  database=self.configuration.get_database_name())
+            con = pymysql.connect(host=self.__configuration.get_database_host(),
+                                  user=self.__configuration.get_database_user(),
+                                  password=self.__configuration.get_database_password(),
+                                  database=self.__configuration.get_database_name())
 
-            sql = 'INSERT INTO log (timestamp, date, time, uptime, internal_ip, external_ip, external_ipv6, is_linked, ' \
-                  'is_connected, str_transmission_rate_up, str_transmission_rate_down, str_max_bit_rate_up, ' \
-                  'str_max_bit_rate_down, str_max_linked_bit_rate_up, str_max_linked_bit_rate_down, model_name, ' \
-                  'system_version, provider, message, source_host) VALUES (\"' + str(timestamp) + '\",\"' + str(self.date) + '\",\"' + \
-                  str(self.time) + '\",\"' + str(fc.connection_uptime) + '\",\"' + str(ip) + '\",\"' + \
-                  str(fc.external_ip) + '\",\"' + str(fc.external_ipv6) + '\",\"' + str(int(fc.is_linked)) + '\",\"' + \
-                  str(int(fc.is_connected)) + '\",\"' + str(fc.str_transmission_rate[0]) + '\",\"' + \
-                  str(fc.str_transmission_rate[1]) + '\",\"' + str(fc.str_max_bit_rate[0]) + '\",\"' + \
-                  str(fc.str_max_bit_rate[1]) + '\",\"' + str(fc.str_max_linked_bit_rate[0]) + '\",\"' + \
-                  str(fc.str_max_linked_bit_rate[1]) + '\",\"' + str(fc.modelname) + '\",\"' + \
-                  str(fc.fc.system_version) + '\",\"' + str(provider) + '\",\"' + str(status) + '\",\"' + \
-                  socket.gethostname() + '\")'
+            sql = 'INSERT INTO log (' \
+                  'timestamp, ' \
+                  'date, ' \
+                  'time, ' \
+                  'uptime, ' \
+                  'internal_ip, ' \
+                  'external_ip, ' \
+                  'external_ipv6, ' \
+                  'is_linked, ' \
+                  'is_connected, ' \
+                  'str_transmission_rate_up, ' \
+                  'str_transmission_rate_down, ' \
+                  'str_max_bit_rate_up, ' \
+                  'str_max_bit_rate_down, ' \
+                  'str_max_linked_bit_rate_up, ' \
+                  'str_max_linked_bit_rate_down, ' \
+                  'model_name, ' \
+                  'system_version, ' \
+                  'provider, ' \
+                  'message, ' \
+                  'source_host '\
+                  ') VALUES (\"' + \
+                  str(model.get_timestamp()) + '\",\"' + \
+                  str(model.get_date()) + '\",\"' + \
+                  str(model.get_time()) + '\",\"' + \
+                  str(model.get_uptime()) + '\",\"' + \
+                  str(model.get_internal_ip()) + '\",\"' + \
+                  str(model.get_external_ip()) + '\",\"' + \
+                  str(model.get_external_ipv6()) + '\",\"' + \
+                  str(int(model.get_is_linked())) + '\",\"' + \
+                  str(int(model.get_is_connected())) + '\",\"' + \
+                  str(model.get_str_transmission_rate_up()) + '\",\"' + \
+                  str(model.get_str_transmission_rate_down()) + '\",\"' + \
+                  str(model.get_str_max_bit_rate_up()) + '\",\"' + \
+                  str(model.get_str_max_bit_rate_down()) + '\",\"' + \
+                  str(model.get_str_max_linked_bit_rate_up()) + '\",\"' + \
+                  str(model.get_str_max_linked_bit_rate_down()) + '\",\"' + \
+                  str(model.get_model_name()) + '\",\"' + \
+                  str(model.get_system_version()) + '\",\"' + \
+                  str(model.get_provider()) + '\",\"' + \
+                  str(model.get_message()) + '\",\"' + \
+                  str(model.get_source_host() + '\")')
 
             with con.cursor() as cur:
                 cur.execute(sql)

@@ -18,30 +18,15 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import json
-
-from bottle import route
-from bottle import run
-from bottle import template
 from logging import getLogger
 
 logger = getLogger(__name__)
 
 
-class Server:
+class Csv:
 
     def __init__(self, configuration):
-        self.__configuration = configuration
+        self.configuration = configuration
 
-    @route('/hello/<name>')
-    def index(self, name):
-        return template('<b>Hello {{name}}</b>!', name=name)
-
-    @route('/config')
-    def config(self):
-        return template('<pre>{{config}}</pre>!', config=json.dumps(vars(self.__configuration),
-                                                                    sort_keys=True, indent=4))
-
-    def run_server(self):
-        run(host=self.__configuration.get_httpserver_host(),
-            port=self.__configuration.get_httpserver_port())
+    def write_model_to_csv(self):
+        return

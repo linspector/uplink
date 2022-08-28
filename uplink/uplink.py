@@ -24,6 +24,7 @@
 #  be optional too.
 
 import calendar
+import socket
 import time
 
 from fritzconnection.lib.fritzstatus import FritzStatus
@@ -60,13 +61,33 @@ class Uplink(Daemon):
             else:
                 self.status = 'DOWN'
 
-            logger.info(str(uplink['provider'] + ' ' + self.status + ' (ip: ' +
-                            fc.external_ip + ')'))
+            logger.info(str(uplink['provider'] + ' (uplink IP: ' + fc.external_ip + ') ' +
+                            self.status))
 
             model = Model(self.configuration)
+            model.set_date(self.date)
+            model.set_external_ip(fc.external_ip)
+            model.set_external_ipv6(fc.external_ipv6)
+            model.set_internal_ip(uplink['ip'])
+            model.set_is_connected(fc.is_connected)
+            model.set_is_linked(fc.is_linked)
+            model.set_message(self.status)
+            model.set_model_name(fc.modelname)
+            model.set_provider(uplink['provider'])
+            model.set_source_host(socket.gethostname())
+            model.set_str_max_bit_rate_down(fc.str_max_bit_rate[1])
+            model.set_str_max_bit_rate_up(fc.str_max_bit_rate[0])
+            model.set_str_max_linked_bit_rate_down(fc.str_max_linked_bit_rate[1])
+            model.set_str_max_linked_bit_rate_up(fc.str_max_linked_bit_rate[0])
+            model.set_str_transmission_rate_down(fc.str_transmission_rate[1])
+            model.set_str_transmission_rate_up (fc.str_transmission_rate[0])
+            model.set_system_version(fc.fc.system_version)
+            model.set_time(self.time)
+            model.set_timestamp(timestamp)
+            model.set_uptime(fc.connection_uptime)
 
             database = Database(self.configuration)
-            database.write_to_db(fc, uplink['ip'], uplink['provider'], self.status)
+            database.write_model_to_db(model)
 
         except Exception as err:
             message = str('error when getting data from ' + uplink['ip'] + ': {0}')
@@ -77,17 +98,17 @@ class Uplink(Daemon):
             if self.configuration.get_httpserver_framework() == 'bottle':
                 from uplink.server_bottle import Server
                 s = Server(self.configuration)
-                st = Thread(target=s.run, daemon=True)
+                st = Thread(target=s.run_server, daemon=True)
                 st.start()
             elif self.configuration.get_httpserver_framework() == 'cherrypy':
                 from uplink.server_cherrypy import Server
                 s = Server(self.configuration)
-                st = Thread(target=s.run, daemon=True)
+                st = Thread(target=s.run_server, daemon=True)
                 st.start()
             elif self.configuration.get_httpserver_framework() == 'pyramid':
                 from uplink.server_pyramid import Server
                 s = Server(self.configuration)
-                st = Thread(target=s.run, daemon=True)
+                st = Thread(target=s.run_server, daemon=True)
                 st.start()
         while True:
             for i in range(len(self.configuration.get_uplinks())):

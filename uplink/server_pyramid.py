@@ -31,16 +31,16 @@ logger = getLogger(__name__)
 class Server:
 
     def __init__(self, configuration):
-        self.configuration = configuration
+        self.__configuration = configuration
 
     def config(self, request):
-        return Response(config=json.dumps(vars(self.configuration), sort_keys=True, indent=4))
+        return Response(config=json.dumps(vars(self.__configuration), sort_keys=True, indent=4))
 
-    def run(self):
+    def run_server(self):
         with Configurator() as config:
             config.add_route('config', '/')
             config.add_view(self.config, route_name='config')
             app = config.make_wsgi_app()
-        server = make_server(self.configuration.get_httpserver_host(),
-                             self.configuration.get_httpserver_port(), app)
+        server = make_server(self.__configuration.get_httpserver_host(),
+                             self.__configuration.get_httpserver_port(), app)
         server.serve_forever()

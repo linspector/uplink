@@ -32,23 +32,23 @@ logger = getLogger(__name__)
 class Server:
 
     def __init__(self, configuration):
-        self.configuration = configuration
+        self.__configuration = configuration
 
     @cherrypy.expose
     def index(self):
-        return "Hello world!"
+        return 'Hello world!'
 
     @cherrypy.expose
     def config(self):
         return '<pre style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
-               json.dumps(vars(self.configuration), sort_keys=True, indent=4) + \
+               json.dumps(vars(self.__configuration), sort_keys=True, indent=4) + \
                '</pre>'
 
     @cherrypy.expose
     def playground(self):
-        return "My Playground!"
+        return 'My Playground!'
 
-    def run(self):
+    def run_server(self):
         conf = {
             '/': {
                 #    'tools.sessions.on': True,
@@ -73,8 +73,8 @@ class Server:
         #})
         cherrypy.config.update({
             'global': {
-                'server.socket_host': self.configuration.get_httpserver_host(),
-                'server.socket_port': self.configuration.get_httpserver_port(),
+                'server.socket_host': self.__configuration.get_httpserver_host(),
+                'server.socket_port': self.__configuration.get_httpserver_port(),
                 'environment': 'production'
             }
         })
