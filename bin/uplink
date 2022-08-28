@@ -71,36 +71,17 @@ def parse_args():
     mode.add_argument('-f', '--foreground', default=False, dest='foreground', action='store_true',
                       help='run looped in foreground (default: false)')
 
-    parser.add_argument('--server', default=False, dest='server', action='store_true',
+    parser.add_argument('--httpserver', default=False, dest='httpserver', action='store_true',
                         help='start http server for status information and statistics')
 
     parser.add_argument('-i', '--interval', type=int, help='poll interval in seconds. this '
-                        'overrides config file settings. (default: 60)')
+                        'overrides config file settings (default: 60)')
 
-    parser.add_argument('-l', '--logfile', metavar='LOGFILE', help='logfile to use')
-
-    parser.add_argument('-n', '--logcount', default=5, type=int,
-                        help='maximum number of logfiles in rotation (default: 5)')
-
-    parser.add_argument('-m', '--logsize', default=10485760, type=int,
-                        help='maximum logfile size in bytes (default: 1048576)')
+    parser.add_argument('-l', '--logfile', metavar='LOGFILE', help='logfile to use. this '
+                                                                   'overrides config file settings')
 
     parser.add_argument('-s', '--stdout', default=False, dest='stdout', action='store_true',
                         help='log to stdout')
-
-    output = parser.add_mutually_exclusive_group()
-    output.add_argument('-q', '--quiet', action='store_const', dest='loglevel',
-                        const=logging.ERROR, help='output only errors')
-
-    output.add_argument('-w', '--warning', action='store_const', dest='loglevel',
-                        const=logging.WARNING, help='output warnings')
-
-    output.add_argument('-v', '--verbose', action='store_const', dest='loglevel',
-                        const=logging.INFO, help='output info messages')
-
-    output.add_argument('-e', '--debug', action='store_const', dest='loglevel',
-                        const=logging.DEBUG, help='output debug messages')
-    output.set_defaults(loglevel=logging.ERROR)
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + str(__version__))
 
@@ -111,25 +92,6 @@ def main():
     args = parse_args()
 
     root_logger = logging.getLogger()
-
-    if args.logfile:
-        logfile = os.path.expanduser(args.logfile)
-        if not os.path.exists(os.path.dirname(logfile)):
-            os.makedirs(os.path.dirname(logfile))
-
-        formatter1 = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(message)s')
-        handler1 = logging.handlers.RotatingFileHandler(args.logfile, maxBytes=args.logsize,
-                                                        backupCount=args.logcount)
-        handler1.setFormatter(formatter1)
-        root_logger.addHandler(handler1)
-
-    if args.stdout:
-        formatter2 = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
-        handler2 = logging.StreamHandler(sys.stdout)
-        handler2.setFormatter(formatter2)
-        root_logger.addHandler(handler2)
-
-    root_logger.setLevel(args.loglevel)
 
     try:
         with open(args.configuration_file, 'r', encoding='utf-8') as configuration_file:
@@ -147,9 +109,39 @@ def main():
     if args.interval:
         configuration.set_interval(args.interval)
 
-    configuration.set_env_var('_server', False)
-    if args.server:
-        configuration.set_env_var('_server', True)
+    if args.logfile:
+        configuration.set_log_file(args.logfile)
+
+    if args.logfile or configuration.get_log_file():
+        log_file = os.path.expanduser(configuration.get_log_file())
+        if not os.path.exists(os.path.dirname(log_file)):
+            os.makedirs(os.path.dirname(log_file))
+
+        formatter1 = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+        handler1 = logging.handlers.RotatingFileHandler(log_file,
+                                                        maxBytes=configuration.get_log_size(),
+                                                        backupCount=configuration.get_log_count())
+        handler1.setFormatter(formatter1)
+        root_logger.addHandler(handler1)
+
+    if args.stdout:
+        formatter2 = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
+        handler2 = logging.StreamHandler(sys.stdout)
+        handler2.setFormatter(formatter2)
+        root_logger.addHandler(handler2)
+
+    # errors will always show up even when no log_level is set!
+    root_logger.setLevel(logging.ERROR)
+    log_level = configuration.get_log_level()
+    if log_level == "warning":
+        root_logger.setLevel(logging.WARNING)
+    elif log_level == "verbose":
+        root_logger.setLevel(logging.INFO)
+    elif log_level == "debug":
+        root_logger.setLevel(logging.DEBUG)
+
+    if args.httpserver or configuration.get_httpserver():
+        configuration.set_env_var('_httpserver', True)
 
     try:
         u = Uplink(configuration.get_pid_file(), configuration)
@@ -171,9 +163,9 @@ def main():
             u.start()
     elif args.foreground:
         from threading import Thread
-        if configuration.get_env_var('_server'):
-            from uplink.server_cherrypy import Server
-            s = Server(configuration)
+        if configuration.get_env_var('_httpserver'):
+            from uplink.httpserver import HTTPServer
+            s = HTTPServer(configuration)
             st = Thread(target=s.run_server, daemon=True)
             st.start()
 

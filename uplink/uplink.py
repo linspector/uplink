@@ -18,10 +18,9 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# TODO: Switch all SQL stuff to SQLAlchemy using the uplink.database Database class
 # TODO: Make the use of a database optional and only output to stdout and/or in a logfile (use rich
 #  for colorizing the std output (https://github.com/Textualize/rich)); Output to a CSV file should
-#  be optional too.
+#  be optional too. Also reinvent SQLite as database backend.
 
 import calendar
 import socket
@@ -33,6 +32,7 @@ from threading import Thread
 from uplink.daemon import Daemon
 from uplink.database import Database
 from uplink.model import Model
+from uplink.notification import Notification
 
 logger = getLogger(__name__)
 
@@ -41,7 +41,8 @@ class Uplink(Daemon):
 
     def __init__(self, pid_file, configuration):
         super().__init__(pid_file)
-        self.configuration = configuration
+        self.__configuration = configuration
+
         self.date = None
         self.time = None
         self.status = None
@@ -52,19 +53,25 @@ class Uplink(Daemon):
         self.date = time.strftime('%Y-%m-%d', local_time)
         self.time = time.strftime('%H:%M:%S', local_time)
 
-        uplink = self.configuration.get_uplink(i)
+        self.__configuration.set_env_var('_last_run', self.date + ' ' + self.time)
+
+        uplink = self.__configuration.get_uplink(i)
         try:
             fc = FritzStatus(address=uplink['ip'],
                              password=uplink['password'])
             if fc.is_connected:
                 self.status = 'UP'
+                self.__configuration.set_env_var('_last_success_' + uplink['identifier'],
+                                                 self.date + ' ' + self.time)
             else:
                 self.status = 'DOWN'
+                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'],
+                                                 self.date + ' ' + self.time)
 
-            logger.info(str(uplink['provider'] + ' (uplink IP: ' + fc.external_ip + ') ' +
+            logger.info(str(uplink['provider'] + ' (IP: ' + fc.external_ip + ') ' +
                             self.status))
 
-            model = Model(self.configuration)
+            model = Model(self.__configuration)
             model.set_date(self.date)
             model.set_external_ip(fc.external_ip)
             model.set_external_ipv6(fc.external_ipv6)
@@ -86,7 +93,7 @@ class Uplink(Daemon):
             model.set_timestamp(timestamp)
             model.set_uptime(fc.connection_uptime)
 
-            database = Database(self.configuration)
+            database = Database(self.__configuration)
             database.write_model_to_db(model)
 
         except Exception as err:
@@ -94,14 +101,14 @@ class Uplink(Daemon):
             logger.error(str(message.format(err)))
 
     def run(self):
-        if self.configuration.get_env_var('_server'):
-            from uplink.server_cherrypy import Server
-            s = Server(self.configuration)
+        if self.__configuration.get_env_var('_httpserver'):
+            from uplink.httpserver import HTTPServer
+            s = HTTPServer(self.__configuration)
             st = Thread(target=s.run_server, daemon=True)
             st.start()
 
         while True:
-            for i in range(len(self.configuration.get_uplinks())):
+            for i in range(len(self.__configuration.get_uplinks())):
                 ut = Thread(target=self.fetch_data, daemon=True, args=(i,))
                 ut.start()
-            time.sleep(self.configuration.get_interval())
+            time.sleep(self.__configuration.get_interval())

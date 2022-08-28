@@ -28,7 +28,8 @@ logger = getLogger(__name__)
 class Speedtest:
 
     def __init__(self, configuration):
-        self.configuration = configuration
+        self.__configuration = configuration
+
         self.download = None
         self.upload = None
 

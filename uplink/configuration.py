@@ -26,27 +26,27 @@ logger = getLogger(__name__)
 class Configuration:
 
     def __init__(self, configuration):
-
         self.__configuration = configuration
+
         self.__database_host = None
         self.__database_name = None
         self.__database_password = None
         self.__database_user = None
-        self.__httpserver_framework = None
+        # environment vars which can be set dynamically at runtime.
+        self.__env = {}
+        self.__httpserver = False
         self.__httpserver_host = '0.0.0.0'
         self.__httpserver_port = 8080
-        self.__interval = '60'
-        self.__log_count = 5
+        self.__interval = 60
+        self.__log_count = 1
         self.__log_file = None
-        self.__log_level = 'info'
-        self.__log_size = 10485760,
+        self.__log_level = None
+        self.__log_size = 0
         self.__pid_file = '/tmp/uplink.pid'
-        self.__run_mode = None
+        self.__run_mode = 'cron'
         self.__uplinks = None
 
-        self.__env = {}
-
-        if'database_host' in self.__configuration:
+        if 'database_host' in self.__configuration:
             self.__database_host = self.__configuration['database_host']
         else:
             raise Exception('database_host required!')
@@ -66,8 +66,8 @@ class Configuration:
         else:
             raise Exception('database_user required!')
 
-        if 'httpserver_framework' in self.__configuration:
-            self.__httpserver_framework = self.__configuration['httpserver_framework']
+        if 'httpserver' in self.__configuration:
+            self.__httpserver = self.__configuration['httpserver']
 
         if 'httpserver_host' in self.__configuration:
             self.__httpserver_host = self.__configuration['httpserver_host']
@@ -78,8 +78,20 @@ class Configuration:
         if 'interval' in self.__configuration:
             self.__interval = self.__configuration['interval']
 
+        if 'log_count' in self.__configuration:
+            self.__log_count = self.__configuration['log_count']
+
+        if 'log_file' in self.__configuration:
+            self.__log_file = self.__configuration['log_file']
+
         if 'log_level' in self.__configuration:
             self.__log_level = self.__configuration['log_level']
+
+        if 'log_size' in self.__configuration:
+            self.__log_size = self.__configuration['log_size']
+
+        if 'pid_file' in self.__configuration:
+            self.__pid_file = self.__configuration['pid_file']
 
         if 'run_mode' in self.__configuration:
             self.__run_mode = self.__configuration['run_mode']
@@ -89,6 +101,7 @@ class Configuration:
         else:
             raise Exception('uplinks required!')
 
+    # get methods
     def get_database_host(self):
         return self.__database_host
 
@@ -105,13 +118,11 @@ class Configuration:
         return self.__env
 
     def get_env_var(self, name):
-        return self.__env[name]
+        if name in self.__env:
+            return self.__env[name]
 
-    def set_env_var(self, name, value):
-        self.__env[name] = value
-
-    def get_httpserver_framework(self):
-        return self.__httpserver_framework
+    def get_httpserver(self):
+        return self.__httpserver
 
     def get_httpserver_host(self):
         return self.__httpserver_host
@@ -122,11 +133,17 @@ class Configuration:
     def get_interval(self):
         return self.__interval
 
-    def set_interval(self, interval):
-        self.__interval = interval
+    def get_log_file(self):
+        return self.__log_file
+
+    def get_log_count(self):
+        return self.__log_count
 
     def get_log_level(self):
         return self.__log_level
+
+    def get_log_size(self):
+        return self.__log_size
 
     def get_pid_file(self):
         return self.__pid_file
@@ -139,3 +156,16 @@ class Configuration:
 
     def get_uplinks(self):
         return self.__uplinks
+
+    # set methods
+    def set_env_var(self, name, value):
+        self.__env[name] = value
+
+    def set_httpserver(self, value):
+        self.__httpserver = value
+
+    def set_interval(self, interval):
+        self.__interval = interval
+
+    def set_log_file(self, value):
+        self.__log_file = value

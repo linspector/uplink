@@ -29,7 +29,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-class Server:
+class HTTPServer:
 
     def __init__(self, configuration):
         self.__configuration = configuration

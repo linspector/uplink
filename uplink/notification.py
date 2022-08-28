@@ -23,10 +23,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-class CSV:
+class Notification:
 
     def __init__(self, configuration):
         self.__configuration = configuration
-
-    def write_model_to_csv(self):
-        return

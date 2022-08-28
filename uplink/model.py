@@ -36,6 +36,7 @@ class Model:
         self.__internal_ip = None
         self.__is_connected = None
         self.__is_linked = None
+        # TODO: rename message to status
         self.__message = None
         self.__model_name = None
         self.__provider = None
