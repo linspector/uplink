@@ -172,24 +172,10 @@ def main():
     elif args.foreground:
         from threading import Thread
         if configuration.get_env_var('_server'):
-            if configuration.get_httpserver_framework() == 'bottle':
-                from uplink.server_bottle import Server
-                s = Server(configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
-            elif configuration.get_httpserver_framework() == 'cherrypy':
-                from uplink.server_cherrypy import Server
-                s = Server(configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
-            elif configuration.get_httpserver_framework() == 'pyramid':
-                from uplink.server_pyramid import Server
-                s = Server(configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
-            else:
-                logger.error('[uplink] no http framework configured! '
-                             '(bottle, cherrypy and pyramid are supported)')
+            from uplink.server_cherrypy import Server
+            s = Server(configuration)
+            st = Thread(target=s.run_server, daemon=True)
+            st.start()
 
         while True:
             for i in range(len(configuration.get_uplinks())):

@@ -95,21 +95,11 @@ class Uplink(Daemon):
 
     def run(self):
         if self.configuration.get_env_var('_server'):
-            if self.configuration.get_httpserver_framework() == 'bottle':
-                from uplink.server_bottle import Server
-                s = Server(self.configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
-            elif self.configuration.get_httpserver_framework() == 'cherrypy':
-                from uplink.server_cherrypy import Server
-                s = Server(self.configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
-            elif self.configuration.get_httpserver_framework() == 'pyramid':
-                from uplink.server_pyramid import Server
-                s = Server(self.configuration)
-                st = Thread(target=s.run_server, daemon=True)
-                st.start()
+            from uplink.server_cherrypy import Server
+            s = Server(self.configuration)
+            st = Thread(target=s.run_server, daemon=True)
+            st.start()
+
         while True:
             for i in range(len(self.configuration.get_uplinks())):
                 ut = Thread(target=self.fetch_data, daemon=True, args=(i,))
