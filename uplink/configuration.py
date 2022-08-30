@@ -28,15 +28,17 @@ class Configuration:
     def __init__(self, configuration):
         self.__configuration = configuration
 
+        self.__base_configuration = None
         self.__database_host = None
         self.__database_name = None
         self.__database_password = None
         self.__database_user = None
-        # environment vars which can be set dynamically at runtime.
+        # environment vars which can be set dynamically at runtime. these vars are shared across all
+        # objects and readable and writable by all of them.
         self.__env = {}
         self.__httpserver = False
         self.__httpserver_host = '0.0.0.0'
-        self.__httpserver_port = 8080
+        self.__httpserver_port = 1042
         self.__interval = 60
         self.__log_count = 1
         self.__log_file = None
@@ -44,6 +46,9 @@ class Configuration:
         self.__log_size = 0
         self.__pid_file = '/tmp/uplink.pid'
         self.__run_mode = 'cron'
+        self.__speedtest = False
+        self.__speedtest_interval = 3600
+        self.__speedtest_url = "https://unixpeople.org/uplink.test"
         self.__uplinks = None
 
         if 'database_host' in self.__configuration:
@@ -96,12 +101,24 @@ class Configuration:
         if 'run_mode' in self.__configuration:
             self.__run_mode = self.__configuration['run_mode']
 
+        if 'speedtest' in self.__configuration:
+            self.__speedtest = self.__configuration['speedtest']
+
+        if 'speedtest_interval' in self.__configuration:
+            self.__speedtest_interval = self.__configuration['speedtest_interval']
+
+        if 'speedtest_url' in self.__configuration:
+            self.__speedtest_url = self.__configuration['speedtest_url']
+
         if 'uplinks' in self.__configuration:
             self.__uplinks = self.__configuration['uplinks']
         else:
             raise Exception('uplinks required!')
 
     # get methods
+    def get_base_configuration(self):
+        return self
+
     def get_database_host(self):
         return self.__database_host
 
@@ -117,9 +134,9 @@ class Configuration:
     def get_env(self):
         return self.__env
 
-    def get_env_var(self, name):
-        if name in self.__env:
-            return self.__env[name]
+    def get_env_var(self, key):
+        if key in self.__env:
+            return self.__env[key]
 
     def get_httpserver(self):
         return self.__httpserver
@@ -151,6 +168,15 @@ class Configuration:
     def get_mode(self):
         return self.__run_mode
 
+    def get_speedtest(self):
+        return self.__speedtest
+
+    def get_speedtest_interval(self):
+        return self.__speedtest_interval
+
+    def get_speedtest_url(self):
+        return self.__speedtest_url
+
     def get_uplink(self, uplink):
         return self.__uplinks[uplink]
 
@@ -158,8 +184,8 @@ class Configuration:
         return self.__uplinks
 
     # set methods
-    def set_env_var(self, name, value):
-        self.__env[name] = value
+    def set_env_var(self, key, value):
+        self.__env[key] = value
 
     def set_httpserver(self, value):
         self.__httpserver = value
@@ -167,5 +193,5 @@ class Configuration:
     def set_interval(self, interval):
         self.__interval = interval
 
-    def set_log_file(self, value):
-        self.__log_file = value
+    def set_log_file(self, log_file):
+        self.__log_file = log_file

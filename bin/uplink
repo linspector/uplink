@@ -21,11 +21,8 @@
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # TODO: CHECK ALL ERROR HANDLING!!!
-# TODO: Make use of less args passed to the script and set values in the config file
-# TODO: Implement a speedtest/ping that will also run regularly but in an individual interval
-# TODO: become more verbose in each log level and log only to error when it really is an error
-#  else log to info and even add debug messages in DEBUG level
-# TODO: make all args consistent and clean... there is some stuff to do!
+# TODO: become more verbose in each log level and log only to error when it really
+#  is an error else log to info and even add debug messages in DEBUG level
 
 import argparse
 import calendar
@@ -72,7 +69,7 @@ def parse_args():
                       help='run looped in foreground (default: false)')
 
     parser.add_argument('--httpserver', default=False, dest='httpserver', action='store_true',
-                        help='start http server for status information and statistics')
+                        help='enable the http server for status information and statistics')
 
     parser.add_argument('-i', '--interval', type=int, help='poll interval in seconds. this '
                         'overrides config file settings (default: 60)')
@@ -103,7 +100,8 @@ def main():
 
     configuration.set_env_var('_start_date', time.strftime('%Y-%m-%d %H:%M:%S',
                                                            time.localtime(
-                                                                calendar.timegm(time.gmtime()))))
+                                                               calendar.timegm(time.gmtime()))))
+    configuration.set_env_var('_start_timestamp', calendar.timegm(time.gmtime()))
 
     # interval set in args is overriding configuration and default
     if args.interval:
@@ -168,6 +166,12 @@ def main():
             s = HTTPServer(configuration)
             st = Thread(target=s.run_server, daemon=True)
             st.start()
+
+        if configuration.get_speedtest():
+            from uplink.speedtest import Speedtest
+            se = Speedtest(configuration)
+            ste = Thread(target=se.run_speedtest, daemon=True)
+            ste.start()
 
         while True:
             for i in range(len(configuration.get_uplinks())):

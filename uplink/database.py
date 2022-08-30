@@ -30,7 +30,7 @@ class Database:
     def __init__(self, configuration):
         self.__configuration = configuration
 
-    def write_model_to_db(self, model):
+    def write_log_to_db(self, model):
         try:
             con = pymysql.connect(host=self.__configuration.get_database_host(),
                                   user=self.__configuration.get_database_user(),
@@ -57,7 +57,7 @@ class Database:
                   'system_version, ' \
                   'provider, ' \
                   'message, ' \
-                  'source_host '\
+                  'source_host ' \
                   ') VALUES (\"' + \
                   str(model.get_timestamp()) + '\",\"' + \
                   str(model.get_date()) + '\",\"' + \
@@ -78,7 +78,7 @@ class Database:
                   str(model.get_system_version()) + '\",\"' + \
                   str(model.get_provider()) + '\",\"' + \
                   str(model.get_message()) + '\",\"' + \
-                  str(model.get_source_host() + '\")')
+                  str(model.get_source_host()) + '\")'
 
             with con.cursor() as cur:
                 cur.execute(sql)

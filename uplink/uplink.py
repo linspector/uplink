@@ -53,7 +53,8 @@ class Uplink(Daemon):
         self.date = time.strftime('%Y-%m-%d', local_time)
         self.time = time.strftime('%H:%M:%S', local_time)
 
-        self.__configuration.set_env_var('_last_run', self.date + ' ' + self.time)
+        self.__configuration.set_env_var('_last_run_date', self.date + ' ' + self.time)
+        self.__configuration.set_env_var('_last_run_timestamp', timestamp)
 
         uplink = self.__configuration.get_uplink(i)
         try:
@@ -61,12 +62,16 @@ class Uplink(Daemon):
                              password=uplink['password'])
             if fc.is_connected:
                 self.status = 'UP'
-                self.__configuration.set_env_var('_last_success_' + uplink['identifier'],
-                                                 self.date + ' ' + self.time)
+                self.__configuration.set_env_var('_last_success_' + uplink['identifier'] +
+                                                 '_date', self.date + ' ' + self.time)
+                self.__configuration.set_env_var('_last_success_' + uplink['identifier'] +
+                                                 '_timestamp', timestamp)
             else:
                 self.status = 'DOWN'
-                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'],
-                                                 self.date + ' ' + self.time)
+                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'] +
+                                                 '_date', self.date + ' ' + self.time)
+                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'] +
+                                                 '_timestamp', timestamp)
 
             logger.info(str(uplink['provider'] + ' (IP: ' + fc.external_ip + ') ' +
                             self.status))
@@ -94,7 +99,7 @@ class Uplink(Daemon):
             model.set_uptime(fc.connection_uptime)
 
             database = Database(self.__configuration)
-            database.write_model_to_db(model)
+            database.write_log_to_db(model)
 
         except Exception as err:
             message = str('error when getting data from ' + uplink['ip'] + ': {0}')
@@ -106,6 +111,12 @@ class Uplink(Daemon):
             s = HTTPServer(self.__configuration)
             st = Thread(target=s.run_server, daemon=True)
             st.start()
+
+        if self.__configuration.get_speedtest():
+            from uplink.speedtest import Speedtest
+            se = Speedtest(self.__configuration)
+            ste = Thread(target=se.run_speedtest, daemon=True)
+            ste.start()
 
         while True:
             for i in range(len(self.__configuration.get_uplinks())):

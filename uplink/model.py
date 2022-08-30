@@ -52,7 +52,7 @@ class Model:
         self.__timestamp = None
         self.__uptime = None
 
-    # set methods:
+        # set methods:
     def set_date(self, date):
         self.__date = date
 
