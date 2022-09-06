@@ -7,7 +7,7 @@ uplink.dist
 .idea
 .run
 __pycache__
-etc/config.json
+etc/uplink.json
 etc/gammurc
 log/*.log*
 uplink.iml
