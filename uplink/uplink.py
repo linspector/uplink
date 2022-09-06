@@ -113,7 +113,7 @@ class Uplink(Daemon):
 
                 status = 'DOWN'
 
-                if self.__configuration.get_notification_gammu():
+                if self.__configuration.get_notification_gammu() is True:
                     from uplink.notification import Notification
                     notification = Notification(self.__configuration)
                     notification.send('STATUS: ' + status)
