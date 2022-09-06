@@ -105,14 +105,14 @@ class Configuration:
             self.__notification_gammu_configuration = \
                 self.__configuration['notification_gammu_configuration']
         elif self.__notification_gammu_configuration is None and \
-                self.__configuration['notification_gammu']:
+                'notification_gammu' in self.__configuration:
             raise Exception('notification_gammu_configuration required!')
 
         if 'notification_gammu_receiver' in self.__configuration:
             self.__notification_gammu_receiver = \
                 self.__configuration['notification_gammu_receiver']
         elif self.__notification_gammu_receiver is None and \
-                self.__configuration['notification_gammu']:
+                'notification_gammu' in self.__configuration:
             raise Exception('notification_gammu_receiver required!')
 
         if 'pid_file' in self.__configuration:
