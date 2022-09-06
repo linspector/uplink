@@ -1,27 +1,38 @@
 {
     "database_host": "127.0.0.1",
     "database_name": "uplink",
-    "database_password": "uplink",
-    "database_type": "mysql",
+    "database_password": "PASSWORD",
+    "database_type": "mariadb",
     "database_user": "uplink",
-    "httpserver_host": "0.0.0.0",
-    "httpserver_port": 4000,
-    "interval": 30,
-    "log_level": "info",
+    "notification_gammu": true,
+    "notification_gammu_configuration": "~/uplink/etc/gammurc",
+    "notification_gammu_receiver": "+4900000000",
+    "httpserver": true,
+    "httpserver_host": "127.0.0.1",
+    "httpserver_port": 1042,
+    "interval": 60,
+    "log_file": "~/uplink/log/uplink.log",
+    "log_level": "verbose",
     "log_count": 5,
-    "log_size": 0,
+    "log_size": 10485760,
     "pid_file": "/var/run/user/1000/uplink.pid",
     "run_mode": "cron",
+    "speedtest": true,
+    "speedtest_interval": 3600,
+    "speedtest_url": "https://go.microsoft.com/fwlink/?Linkid=850641",
     "uplinks": [
         {
-            "provider": "Cable Provider",
-            "ip": "192.168.0.1",
-            "password": "1234"
+            "identifier": "vodafone",
+            "primary": true,
+            "ip": "192.168.0.1",,
+            "password": "PASSWORD",
+            "provider": "Cable Provider"
         },
         {
-            "provider": "DSL Provider",
+            "identifier": "telekom",
             "ip": "192.168.1.1",
-            "password": "1234"
+            "password": "PASSWORD",
+            "provider": "DSL Provider"
         }
     ]
 }
