@@ -37,13 +37,16 @@ class Configuration:
         # objects and readable and writable by all of them.
         self.__env = {}
         self.__httpserver = False
-        self.__httpserver_host = '0.0.0.0'
+        self.__httpserver_host = '127.0.0.1'
         self.__httpserver_port = 1042
         self.__interval = 60
         self.__log_count = 1
         self.__log_file = None
         self.__log_level = None
         self.__log_size = 0
+        self.__notification_gammu = False
+        self.__notification_gammu_configuration = None
+        self.__notification_gammu_receiver = None
         self.__pid_file = '/tmp/uplink.pid'
         self.__run_mode = 'cron'
         self.__speedtest = False
@@ -95,6 +98,23 @@ class Configuration:
         if 'log_size' in self.__configuration:
             self.__log_size = self.__configuration['log_size']
 
+        if 'notification_gammu' in self.__configuration:
+            self.__notification_gammu = self.__configuration['notification_gammu']
+
+        if 'notification_gammu_configuration' in self.__configuration:
+            self.__notification_gammu_configuration = \
+                self.__configuration['notification_gammu_configuration']
+        elif self.__notification_gammu_configuration is None and \
+                self.__configuration['notification_gammu']:
+            raise Exception('notification_gammu_configuration required!')
+
+        if 'notification_gammu_receiver' in self.__configuration:
+            self.__notification_gammu_receiver = \
+                self.__configuration['notification_gammu_receiver']
+        elif self.__notification_gammu_receiver is None and \
+                self.__configuration['notification_gammu']:
+            raise Exception('notification_gammu_receiver required!')
+
         if 'pid_file' in self.__configuration:
             self.__pid_file = self.__configuration['pid_file']
 
@@ -112,7 +132,7 @@ class Configuration:
 
         if 'uplinks' in self.__configuration:
             self.__uplinks = self.__configuration['uplinks']
-        else:
+        if self.__uplinks is None:
             raise Exception('uplinks required!')
 
     # get methods
@@ -137,6 +157,8 @@ class Configuration:
     def get_env_var(self, key):
         if key in self.__env:
             return self.__env[key]
+        else:
+            return False
 
     def get_httpserver(self):
         return self.__httpserver
@@ -161,6 +183,15 @@ class Configuration:
 
     def get_log_size(self):
         return self.__log_size
+
+    def get_notification_gammu(self):
+        return self.__notification_gammu
+
+    def get_notification_gammu_configuration(self):
+        return self.__notification_gammu_configuration
+
+    def get_notification_gammu_receiver(self):
+        return self.__notification_gammu_receiver
 
     def get_pid_file(self):
         return self.__pid_file

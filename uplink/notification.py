@@ -18,6 +18,8 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#import gammu
+
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -27,3 +29,15 @@ class Notification:
 
     def __init__(self, configuration):
         self.__configuration = configuration
+        #self.__state_machine = gammu.StateMachine()
+        #self.__state_machine.ReadConfig(
+        #    self.__configuration.get_notification_gammu_configuration())
+
+    def send(self, status):
+        #message = {
+        #    "Number": self.__configuration.get_notification_gammu_receiver(),
+        #    "Text": "message text",
+        #    "SMSC": {"Location": 1},
+        #}
+        #self.__state_machine.SendSMS(message)
+        logger.error(status)

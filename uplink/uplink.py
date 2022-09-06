@@ -32,7 +32,6 @@ from threading import Thread
 from uplink.daemon import Daemon
 from uplink.database import Database
 from uplink.model import Model
-from uplink.notification import Notification
 
 logger = getLogger(__name__)
 
@@ -43,60 +42,106 @@ class Uplink(Daemon):
         super().__init__(pid_file)
         self.__configuration = configuration
 
-        self.date = None
-        self.time = None
-        self.status = None
-
     def fetch_data(self, i):
         timestamp = calendar.timegm(time.gmtime())
         local_time = time.localtime(timestamp)
-        self.date = time.strftime('%Y-%m-%d', local_time)
-        self.time = time.strftime('%H:%M:%S', local_time)
+        date_formatted = time.strftime('%Y-%m-%d', local_time)
+        time_formatted = time.strftime('%H:%M:%S', local_time)
 
-        self.__configuration.set_env_var('_last_run_date', self.date + ' ' + self.time)
-        self.__configuration.set_env_var('_last_run_timestamp', timestamp)
+        self.__configuration.set_env_var('_internal_last_run_date', date_formatted + ' ' +
+                                         time_formatted)
+        self.__configuration.set_env_var('_internal_last_run_timestamp', timestamp)
 
         uplink = self.__configuration.get_uplink(i)
-        try:
-            fc = FritzStatus(address=uplink['ip'],
-                             password=uplink['password'])
-            if fc.is_connected:
-                self.status = 'UP'
-                self.__configuration.set_env_var('_last_success_' + uplink['identifier'] +
-                                                 '_date', self.date + ' ' + self.time)
-                self.__configuration.set_env_var('_last_success_' + uplink['identifier'] +
-                                                 '_timestamp', timestamp)
-            else:
-                self.status = 'DOWN'
-                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'] +
-                                                 '_date', self.date + ' ' + self.time)
-                self.__configuration.set_env_var('_last_fail_' + uplink['identifier'] +
-                                                 '_timestamp', timestamp)
 
-            logger.info(str(uplink['provider'] + ' (IP: ' + fc.external_ip + ') ' +
-                            self.status))
+        if 'primary' in uplink:
+            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] + '_primary',
+                                             uplink['primary'])
+
+        if self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
+                                            '_fail_count') is False:
+            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                             '_fail_count', 0)
+
+        if self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
+                                            '_fail_overall_count') is False:
+            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                             '_fail_overall_count', 0)
+
+        try:
+            fritz_connection = FritzStatus(address=uplink['ip'],
+                                           password=uplink['password'])
+
+            if fritz_connection.is_connected:
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_fail_count', 0)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_last_success_date', date_formatted + ' ' +
+                                                 time_formatted)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_last_success_timestamp', timestamp)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_status', 'UP')
+
+                status = 'UP'
+            else:
+                fail_count = self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
+                                                              '_fail_count')
+                fail_count += 1
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] + '_fail_count',
+                                                 fail_count)
+
+                fail_overall_count = self.__configuration.get_env_var('_uplink_' +
+                                                                      uplink['identifier'] +
+                                                                      '_fail_overall_count')
+                fail_overall_count += 1
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_fail_overall_count', fail_overall_count)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_last_fail_date', date_formatted + ' ' +
+                                                 time_formatted)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_last_fail_timestamp', timestamp)
+
+                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
+                                                 '_status', 'DOWN')
+
+                status = 'DOWN'
+
+                if self.__configuration.get_notification_gammu():
+                    from uplink.notification import Notification
+                    notification = Notification(self.__configuration)
+                    notification.send('STATUS: ' + status)
+
+            logger.info(str(uplink['provider'] + ' (IP: ' + fritz_connection.external_ip + ') ' +
+                            status))
 
             model = Model(self.__configuration)
-            model.set_date(self.date)
-            model.set_external_ip(fc.external_ip)
-            model.set_external_ipv6(fc.external_ipv6)
+            model.set_date(date_formatted)
+            model.set_external_ip(fritz_connection.external_ip)
+            model.set_external_ipv6(fritz_connection.external_ipv6)
             model.set_internal_ip(uplink['ip'])
-            model.set_is_connected(fc.is_connected)
-            model.set_is_linked(fc.is_linked)
-            model.set_message(self.status)
-            model.set_model_name(fc.modelname)
+            model.set_is_connected(fritz_connection.is_connected)
+            model.set_is_linked(fritz_connection.is_linked)
+            model.set_message(status)
+            model.set_model_name(fritz_connection.modelname)
             model.set_provider(uplink['provider'])
             model.set_source_host(socket.gethostname())
-            model.set_str_max_bit_rate_down(fc.str_max_bit_rate[1])
-            model.set_str_max_bit_rate_up(fc.str_max_bit_rate[0])
-            model.set_str_max_linked_bit_rate_down(fc.str_max_linked_bit_rate[1])
-            model.set_str_max_linked_bit_rate_up(fc.str_max_linked_bit_rate[0])
-            model.set_str_transmission_rate_down(fc.str_transmission_rate[1])
-            model.set_str_transmission_rate_up (fc.str_transmission_rate[0])
-            model.set_system_version(fc.fc.system_version)
-            model.set_time(self.time)
+            model.set_str_max_bit_rate_down(fritz_connection.str_max_bit_rate[1])
+            model.set_str_max_bit_rate_up(fritz_connection.str_max_bit_rate[0])
+            model.set_str_max_linked_bit_rate_down(fritz_connection.str_max_linked_bit_rate[1])
+            model.set_str_max_linked_bit_rate_up(fritz_connection.str_max_linked_bit_rate[0])
+            model.set_str_transmission_rate_down(fritz_connection.str_transmission_rate[1])
+            model.set_str_transmission_rate_up(fritz_connection.str_transmission_rate[0])
+            model.set_system_version(fritz_connection.fc.system_version)
+            model.set_time(time_formatted)
             model.set_timestamp(timestamp)
-            model.set_uptime(fc.connection_uptime)
+            model.set_uptime(fritz_connection.connection_uptime)
 
             database = Database(self.__configuration)
             database.write_log_to_db(model)
@@ -106,7 +151,7 @@ class Uplink(Daemon):
             logger.error(str(message.format(err)))
 
     def run(self):
-        if self.__configuration.get_env_var('_httpserver'):
+        if self.__configuration.get_http_server():
             from uplink.httpserver import HTTPServer
             s = HTTPServer(self.__configuration)
             st = Thread(target=s.run_server, daemon=True)
