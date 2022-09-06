@@ -47,6 +47,7 @@ class Configuration:
         self.__notification_gammu = False
         self.__notification_gammu_configuration = None
         self.__notification_gammu_receiver = None
+        self.__notification_gammu_repeat = 30
         self.__pid_file = '/tmp/uplink.pid'
         self.__run_mode = 'cron'
         self.__speedtest = False
@@ -114,6 +115,9 @@ class Configuration:
         elif self.__notification_gammu_receiver is None and \
                 'notification_gammu' in self.__configuration:
             raise Exception('notification_gammu_receiver required!')
+
+        if 'notification_gammu_repeat' in self.__configuration:
+            self.__notification_gammu_repeat = self.__configuration['notification_gammu_repeat']
 
         if 'pid_file' in self.__configuration:
             self.__pid_file = self.__configuration['pid_file']
@@ -192,6 +196,9 @@ class Configuration:
 
     def get_notification_gammu_receiver(self):
         return self.__notification_gammu_receiver
+
+    def get_notification_gammu_repeat(self):
+        return self.__notification_gammu_repeat
 
     def get_pid_file(self):
         return self.__pid_file

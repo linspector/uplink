@@ -22,14 +22,14 @@
     "speedtest_url": "https://go.microsoft.com/fwlink/?Linkid=850641",
     "uplinks": [
         {
-            "identifier": "vodafone",
+            "identifier": "cable",
             "primary": true,
             "ip": "192.168.0.1",,
             "password": "PASSWORD",
             "provider": "Cable Provider"
         },
         {
-            "identifier": "telekom",
+            "identifier": "dsl",
             "ip": "192.168.1.1",
             "password": "PASSWORD",
             "provider": "DSL Provider"

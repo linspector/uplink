@@ -40,4 +40,4 @@ class Notification:
         #    "SMSC": {"Location": 1},
         #}
         #self.__state_machine.SendSMS(message)
-        logger.error(status)
+        logger.info(status)

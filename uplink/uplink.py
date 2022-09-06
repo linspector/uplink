@@ -114,9 +114,17 @@ class Uplink(Daemon):
                 status = 'DOWN'
 
                 if self.__configuration.get_notification_gammu() is True:
-                    from uplink.notification import Notification
-                    notification = Notification(self.__configuration)
-                    notification.send('STATUS: ' + status)
+                    notification_gammu_repeat = self.__configuration.get_notification_gammu_repeat()
+
+                    """
+                    send notification on first occurrence and on
+                    (fail_count % notification_gammu_repeat == 0) which is
+                    (notification_gammu_repeat * interval) in seconds.
+                    """
+                    if fail_count == 1 or fail_count % notification_gammu_repeat == 0:
+                        from uplink.notification import Notification
+                        notification = Notification(self.__configuration)
+                        notification.send('[' + uplink['provider'] + '] ' + status)
 
             logger.info(str(uplink['provider'] + ' (IP: ' + fritz_connection.external_ip + ') ' +
                             status))
