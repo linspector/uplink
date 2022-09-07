@@ -18,9 +18,12 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import re
+import socket
+
 from logging import getLogger
 
-logger = getLogger(__name__)
+logger = getLogger('uplink')
 
 
 class Configuration:
@@ -45,7 +48,7 @@ class Configuration:
         self.__log_level = None
         self.__log_size = 0
         self.__notification_gammu = False
-        self.__notification_gammu_configuration = None
+        self.__notification_gammu_configuration_file = None
         self.__notification_gammu_receiver = None
         self.__notification_gammu_repeat = 30
         self.__pid_file = '/tmp/uplink.pid'
@@ -102,12 +105,12 @@ class Configuration:
         if 'notification_gammu' in self.__configuration:
             self.__notification_gammu = self.__configuration['notification_gammu']
 
-        if 'notification_gammu_configuration' in self.__configuration:
-            self.__notification_gammu_configuration = \
-                self.__configuration['notification_gammu_configuration']
-        elif self.__notification_gammu_configuration is None and \
+        if 'notification_gammu_configuration_file' in self.__configuration:
+            self.__notification_gammu_configuration_file = \
+                self.__configuration['notification_gammu_configuration_file']
+        elif self.__notification_gammu_configuration_file is None and \
                 'notification_gammu' in self.__configuration:
-            raise Exception('notification_gammu_configuration required!')
+            raise Exception('notification_gammu_configuration_file required!')
 
         if 'notification_gammu_receiver' in self.__configuration:
             self.__notification_gammu_receiver = \
@@ -136,6 +139,26 @@ class Configuration:
 
         if 'uplinks' in self.__configuration:
             self.__uplinks = self.__configuration['uplinks']
+            for uplink in self.__uplinks:
+                if 'identifier' not in uplink:
+                    raise Exception('missing at least one identifier in an uplink!')
+                if bool(re.match('^[a-z]+$', uplink['identifier'])) is False:
+                    raise Exception('uplink identifier ' + uplink['identifier'] +
+                                    ' must only contain lowercase letters!')
+
+                if 'ip' not in uplink:
+                    raise Exception('missing ip for identifier ' + uplink['identifier'] + '!')
+                try:
+                    socket.inet_aton(uplink['ip'])
+                except Exception as err:
+                    raise Exception('invalid ip for identifier ' + uplink['identifier'] + '!')
+
+                if 'password' not in uplink:
+                    raise Exception('missing password for identifier ' + uplink['identifier'] + '!')
+
+                if 'provider' not in uplink:
+                    uplink['provider'] = 'Not configured'
+
         if self.__uplinks is None:
             raise Exception('uplinks required!')
 
@@ -191,7 +214,7 @@ class Configuration:
     def get_notification_gammu(self):
         return self.__notification_gammu
 
-    def get_notification_gammu_configuration(self):
+    def get_notification_gammu_configuration_file(self):
         return self.__notification_gammu_configuration
 
     def get_notification_gammu_receiver(self):

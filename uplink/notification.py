@@ -22,7 +22,7 @@
 
 from logging import getLogger
 
-logger = getLogger(__name__)
+logger = getLogger('uplink')
 
 
 class Notification:
@@ -31,7 +31,7 @@ class Notification:
         self.__configuration = configuration
         #self.__state_machine = gammu.StateMachine()
         #self.__state_machine.ReadConfig(
-        #    self.__configuration.get_notification_gammu_configuration())
+        #    self.__configuration.get_notification_gammu_configuration_file())
 
     def send(self, status):
         #message = {

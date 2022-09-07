@@ -23,6 +23,7 @@
 #  be optional too. Also reinvent SQLite as database backend.
 
 import calendar
+import logging
 import socket
 import time
 
@@ -33,7 +34,7 @@ from uplink.daemon import Daemon
 from uplink.database import Database
 from uplink.model import Model
 
-logger = getLogger(__name__)
+logger = getLogger('uplink')
 
 
 class Uplink(Daemon):
@@ -86,7 +87,7 @@ class Uplink(Daemon):
                 self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
                                                  '_status', 'UP')
 
-                status = 'UP'
+                status = 'up'
             else:
                 fail_count = self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
                                                               '_fail_count')
@@ -111,7 +112,7 @@ class Uplink(Daemon):
                 self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
                                                  '_status', 'DOWN')
 
-                status = 'DOWN'
+                status = 'down'
 
                 if self.__configuration.get_notification_gammu() is True:
                     notification_gammu_repeat = self.__configuration.get_notification_gammu_repeat()
@@ -126,8 +127,7 @@ class Uplink(Daemon):
                         notification = Notification(self.__configuration)
                         notification.send('[' + uplink['provider'] + '] ' + status)
 
-            logger.info(str(uplink['provider'] + ' (IP: ' + fritz_connection.external_ip + ') ' +
-                            status))
+            logger.info(str(uplink['identifier'] + ': ' + status))
 
             model = Model(self.__configuration)
             model.set_date(date_formatted)
@@ -155,21 +155,21 @@ class Uplink(Daemon):
             database.write_log_to_db(model)
 
         except Exception as err:
-            message = str('error when getting data from ' + uplink['ip'] + ': {0}')
+            message = str('error when getting data from ' + uplink['ip'] + '')
             logger.error(str(message.format(err)))
 
     def run(self):
         if self.__configuration.get_http_server():
             from uplink.httpserver import HTTPServer
-            s = HTTPServer(self.__configuration)
-            st = Thread(target=s.run_server, daemon=True)
-            st.start()
+            hs = HTTPServer(self.__configuration)
+            hst = Thread(target=hs.run_server, daemon=True)
+            hst.start()
 
         if self.__configuration.get_speedtest():
             from uplink.speedtest import Speedtest
-            se = Speedtest(self.__configuration)
-            ste = Thread(target=se.run_speedtest, daemon=True)
-            ste.start()
+            st = Speedtest(self.__configuration)
+            stt = Thread(target=st.run_speedtest, daemon=True)
+            stt.start()
 
         while True:
             for i in range(len(self.__configuration.get_uplinks())):

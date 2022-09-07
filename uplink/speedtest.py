@@ -24,7 +24,7 @@ import time
 
 from logging import getLogger
 
-logger = getLogger(__name__)
+logger = getLogger('uplink')
 
 
 class Speedtest:
@@ -32,9 +32,9 @@ class Speedtest:
     def __init__(self, configuration):
         self.__configuration = configuration
 
-        self.speedtest_maximum_speed = None
-        self.speedtest_average_speed = None
-        self.speedtest_time_elapsed = None
+        self.__speedtest_maximum_speed = None
+        self.__speedtest_average_speed = None
+        self.__speedtest_time_elapsed = None
 
     def run_speedtest(self):
         while True:
@@ -64,19 +64,22 @@ class Speedtest:
                     total_chunks += 1
                     total_mbps += mbps
 
-                self.speedtest_maximum_speed = maximum_speed
-                self.__configuration.set_env_var('_speedtest_maximum_speed_megabyte_per_second',
-                                                 str(round(self.speedtest_maximum_speed)))
-
-                self.speedtest_average_speed = total_mbps / total_chunks
+                self.__speedtest_average_speed = total_mbps / total_chunks
                 self.__configuration.set_env_var('_speedtest_average_speed_megabyte_per_second',
-                                                 str(round(self.speedtest_average_speed)))
+                                                 str(round(self.__speedtest_average_speed)))
 
-                self.speedtest_time_elapsed = time.perf_counter() - start
+                self.__speedtest_maximum_speed = maximum_speed
+                self.__configuration.set_env_var('_speedtest_maximum_speed_megabyte_per_second',
+                                                 str(round(self.__speedtest_maximum_speed)))
+
+                self.__speedtest_time_elapsed = time.perf_counter() - start
                 self.__configuration.set_env_var('_speedtest_time_elapsed',
-                                                 str(self.speedtest_time_elapsed))
+                                                 str(self.__speedtest_time_elapsed))
+                logger.info('speedtest average: ' + str(self.__speedtest_average_speed) +
+                            ', max: ' + str(self.__speedtest_maximum_speed) +
+                            ', time: ' + str(self.__speedtest_time_elapsed))
             else:
-                logger.warning("could not calculate download speed!")
+                logger.warning('could not calculate download speed!')
 
             time.sleep(self.__configuration.get_speedtest_interval())
 

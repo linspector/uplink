@@ -21,8 +21,9 @@
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # TODO: CHECK ALL ERROR HANDLING!!!
+# TODO: Refactor all logging and make it clean and consistent.
 # TODO: become more verbose in each log level and log only to error when it really
-#  is an error else log to info and even add debug messages in DEBUG level
+#  is an error else log to info and even add debug messages in DEBUG level.
 
 import argparse
 import calendar
@@ -36,10 +37,10 @@ import time
 from uplink.configuration import Configuration
 from uplink.uplink import Uplink
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('uplink')
 
 
 def parse_args():
@@ -88,14 +89,12 @@ def parse_args():
 def main():
     args = parse_args()
 
-    root_logger = logging.getLogger()
-
     try:
         with open(args.configuration_file, 'r', encoding='utf-8') as configuration_file:
             configuration_data = configuration_file.read()
         configuration = Configuration(json.loads(configuration_data))
     except Exception as err:
-        logger.error(str('[uplink] configuration error! {0}'.format(err)))
+        logger.error(str('[uplink] configuration error: {0}'.format(err)))
         sys.exit(1)
 
     configuration.set_env_var('_internal_start_date', time.strftime('%Y-%m-%d %H:%M:%S',
@@ -119,23 +118,23 @@ def main():
                                                         maxBytes=configuration.get_log_size(),
                                                         backupCount=configuration.get_log_count())
         handler1.setFormatter(formatter1)
-        root_logger.addHandler(handler1)
+        logger.addHandler(handler1)
 
     if args.stdout:
         formatter2 = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')
         handler2 = logging.StreamHandler(sys.stdout)
         handler2.setFormatter(formatter2)
-        root_logger.addHandler(handler2)
+        logger.addHandler(handler2)
 
     # errors will always show up even when no log_level is set!
-    root_logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.ERROR)
     log_level = configuration.get_log_level()
     if log_level == "warning":
-        root_logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.WARNING)
     elif log_level == "verbose":
-        root_logger.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
     elif log_level == "debug":
-        root_logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
     if args.httpserver or configuration.get_httpserver():
         configuration.set_httpserver(True)
@@ -182,7 +181,7 @@ def main():
                 logger.info(str('[uplink] program terminated by user!'))
                 sys.exit(0)
     else:
-        logger.error('uplink: no run mode selected; use --cron (-c), --daemon (-d) or '
+        logger.error('[uplink] no run mode selected; use --cron (-c), --daemon (-d) or '
                      '--foreground (-f) to run uplink. use --help for more information')
 
 
