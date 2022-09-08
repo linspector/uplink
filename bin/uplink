@@ -37,9 +37,17 @@ import time
 from uplink.configuration import Configuration
 from uplink.uplink import Uplink
 
-# According to: https://wiki.unixpeople.org/linux_kernel_version_numbering
-# MAJOR_RELEASE.MAJOR_CHANGES.MINOR_CHANGES.BUG_FIXES
-__version__ = '0.8.3.0'
+"""
+According to: https://wiki.unixpeople.org/linux_kernel_version_numbering
+MAJOR.FEATURE.MINOR.FIXES
+MAJOR changes can change the API. The lesser, the better.
+FEATURE changes can, but should not break the API. New features are placed here. It expects a 
+complete documentation.
+MINOR changes are "just-in-time" changes or small enhancements which should not affect the 
+documentation.
+FIXES should never affect anything else then stability or security.
+"""
+__version__ = '0.8.3.2'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
 logger = logging.getLogger('uplink')
