@@ -31,6 +31,7 @@ import json
 import logging
 import logging.handlers
 import os
+import socket
 import sys
 import time
 
@@ -47,7 +48,7 @@ MINOR changes are "just-in-time" changes or small enhancements which should not 
 documentation.
 FIXES should never affect anything else then stability or security.
 """
-__version__ = '0.8.3.2'
+__version__ = '0.8.4.0'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
 logger = logging.getLogger('uplink')
@@ -106,6 +107,10 @@ def main():
     except Exception as err:
         logger.error(str('[uplink] configuration error: {0}'.format(err)))
         sys.exit(1)
+
+    configuration.set_env_var('_hostname', socket.gethostname())
+
+    configuration.set_env_var('__version__', __version__)
 
     configuration.set_env_var('_internal_start_date', time.strftime('%Y-%m-%d %H:%M:%S',
                               time.localtime(calendar.timegm(time.gmtime()))))

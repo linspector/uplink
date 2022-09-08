@@ -125,7 +125,7 @@ class Uplink(Daemon):
                     if fail_count == 1 or fail_count % notification_gammu_repeat == 0:
                         from uplink.notification import Notification
                         notification = Notification(self.__configuration)
-                        notification.send('[' + uplink['provider'] + '] ' + status)
+                        notification.send('[' + uplink['identifier'] + '] ' + status)
 
             logger.info(str(uplink['identifier'] + ': ' + status))
 
