@@ -40,7 +40,8 @@ class HTTPServer:
 
     @cherrypy.expose
     def configuration(self):
-        return '<!DOCTYPE html><html><head><title>[uplink@' + \
+        return '<!DOCTYPE html><html><head><title>[uplink-' + \
+               self.__configuration.get_env_var("__version__") + '@' + \
                self.__configuration.get_env_var("_hostname") + '] configuration</title><meta ' + \
                'http-equiv="refresh" content="60"></head><body><pre ' + \
                'style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
