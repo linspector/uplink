@@ -140,7 +140,7 @@ def main():
         configuration.set_httpserver(True)
 
     try:
-        u = Uplink(configuration.get_pid_file(), configuration)
+        u = Uplink(configuration)
     except Exception as err:
         logger.error(str('[uplink] core error! {0}'.format(err)))
         sys.exit(1)

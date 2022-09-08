@@ -39,8 +39,8 @@ logger = getLogger('uplink')
 
 class Uplink(Daemon):
 
-    def __init__(self, pid_file, configuration):
-        super().__init__(pid_file)
+    def __init__(self, configuration):
+        super().__init__(configuration.get_pid_file())
         self.__configuration = configuration
 
     def fetch_data(self, i):
