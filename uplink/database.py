@@ -33,9 +33,10 @@ class Database:
     def write_log_to_db(self, model):
         try:
             con = pymysql.connect(host=self.__configuration.get_database_host(),
-                                  user=self.__configuration.get_database_user(),
+                                  database=self.__configuration.get_database_name(),
                                   password=self.__configuration.get_database_password(),
-                                  database=self.__configuration.get_database_name())
+                                  port=self.__configuration.get_database_port(),
+                                  user=self.__configuration.get_database_user())
 
             sql = 'INSERT INTO log (' \
                   'timestamp, ' \

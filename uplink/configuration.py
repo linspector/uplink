@@ -35,6 +35,7 @@ class Configuration:
         self.__database_host = None
         self.__database_name = None
         self.__database_password = None
+        self.__database_port = 3306
         self.__database_user = None
         # environment vars which can be set dynamically at runtime. these vars are shared across all
         # objects and readable and writable by all of them.
@@ -72,6 +73,9 @@ class Configuration:
             self.__database_password = self.__configuration['database_password']
         else:
             raise Exception('database_password required!')
+
+        if 'database_port' in self.__configuration:
+            self.__database_port = self.__configuration['database_port']
 
         if 'database_user' in self.__configuration:
             self.__database_user = self.__configuration['database_user']
@@ -163,9 +167,6 @@ class Configuration:
             raise Exception('uplinks required!')
 
     # get methods
-    def get_base_configuration(self):
-        return self
-
     def get_database_host(self):
         return self.__database_host
 
@@ -174,6 +175,9 @@ class Configuration:
 
     def get_database_password(self):
         return self.__database_password
+
+    def get_database_port(self):
+        return self.__database_port
 
     def get_database_user(self):
         return self.__database_user
