@@ -215,7 +215,7 @@ class Configuration:
         return self.__notification_gammu
 
     def get_notification_gammu_configuration_file(self):
-        return self.__notification_gammu_configuration
+        return self.__notification_gammu_configuration_file
 
     def get_notification_gammu_receiver(self):
         return self.__notification_gammu_receiver
