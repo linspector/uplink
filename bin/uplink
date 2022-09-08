@@ -37,7 +37,9 @@ import time
 from uplink.configuration import Configuration
 from uplink.uplink import Uplink
 
-__version__ = '0.8.1'
+# MAJOR_RELEASE.MAJOR CHANGES.MINOR_CHANGES.BUG_FIXES
+# Related to: https://wiki.unixpeople.org/linux_kernel_version_numbering
+__version__ = '0.8.2'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
 logger = logging.getLogger('uplink')

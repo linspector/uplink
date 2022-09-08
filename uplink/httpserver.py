@@ -40,9 +40,10 @@ class HTTPServer:
 
     @cherrypy.expose
     def config(self):
-        return '<pre style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
+        return '<html><head><meta http-equiv="refresh" content="60"></head><body><pre ' \
+               'style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
                json.dumps(vars(self.__configuration), sort_keys=True, indent=4) + \
-               '</pre>'
+               '</pre></body></html>'
 
     @cherrypy.expose
     def playground(self):
