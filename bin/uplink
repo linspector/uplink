@@ -108,6 +108,8 @@ def main():
         logger.error(str('[uplink] configuration error: {0}'.format(err)))
         sys.exit(1)
 
+    # To be more cross-platform compatible maybe changes are needed:
+    # https://stackoverflow.com/questions/4271740/how-can-i-use-python-to-get-the-system-hostname
     configuration.set_env_var('_hostname', socket.gethostname())
 
     configuration.set_env_var('__version__', __version__)

@@ -39,7 +39,7 @@ class HTTPServer:
         return 'Hello world!'
 
     @cherrypy.expose
-    def config(self):
+    def configuration(self):
         return '<!DOCTYPE html><html><head><title>[uplink@' + \
                self.__configuration.get_env_var("_hostname") + '] configuration</title><meta ' + \
                'http-equiv="refresh" content="60"></head><body><pre ' + \
@@ -59,7 +59,7 @@ class HTTPServer:
                 'tools.response_headers.on': True,
                 'tools.response_headers.headers': [('Content-Type', 'text/plain')],
             },
-            '/config': {
+            '/configuration': {
                 #    'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
                 'tools.response_headers.on': True,
                 'tools.response_headers.headers': [('Content-Type', 'text/html')],
