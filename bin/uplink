@@ -49,7 +49,7 @@ MINOR changes are "just-in-time" changes or small enhancements which should not 
 documentation.
 FIXES should never affect anything else then stability or security.
 """
-__version__ = '0.9.0.0'
+__version__ = '0.9.0.1'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
 logger = logging.getLogger('uplink')

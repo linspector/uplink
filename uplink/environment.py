@@ -26,7 +26,12 @@ from logging import getLogger
 logger = getLogger('uplink')
 
 """
-This is experimental because you can set what you want but if a env key you set already exists it 
+this is for environment vars which can be set dynamically at runtime. these vars are shared across 
+all objects and are readable and writable by all of them. environment variables are set at runtime 
+and currently not stored in the database. the goal is to minimize all of these vars but for now it 
+is nice feature to save states without saving them for runtime execution at another place.
+        
+this is experimental because you can set what you want but if a env key you set already exists it 
 will be overwritten. But it is an easy and maybe secure way to to set runtime variables which should 
 not affect the execution of uplink but may be required variables to execute to your wanted 
 configuration. Core functionality must not be affected when using this class!
@@ -36,19 +41,19 @@ configuration. Core functionality must not be affected when using this class!
 class Environment:
 
     def __init__(self):
-        # environment vars which can be set dynamically at runtime. these vars are shared across all
-        # objects and readable and writable by all of them.
         self.__env = {}
 
     def get_env_var(self, key):
         if key in self.__env:
             return self.__env[key]
         else:
-            logger.info('environment var "' + key + '" not found! could be that is set late at '
-                                                    'runtime. if you encounter errors executing '
-                                                    'uplink, something is wrong in the code. '
-                                                    'please consider to report this as a bug! btw. '
-                                                    'INFO is not an ERROR!')
+            logger.info('environment var "' + key + '" not found! could be that it is set later at '
+                                                    'runtime. if you encounter any errors '
+                                                    'executing uplink, something is wrong in the '
+                                                    'logic of the code. please consider reporting '
+                                                    'this as a bug! btw. INFO is not an ERROR! ' 
+                                                    'uplink should work even with missing '
+                                                    'environment variables.')
             return False
 
     def set_env_var(self, key, value):
