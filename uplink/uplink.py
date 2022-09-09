@@ -87,7 +87,7 @@ class Uplink(Daemon):
                 self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
                                                  '_status', 'UP')
 
-                status = 'up'
+                status = 'UP'
             else:
                 fail_count = self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
                                                               '_fail_count')
@@ -112,7 +112,7 @@ class Uplink(Daemon):
                 self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
                                                  '_status', 'DOWN')
 
-                status = 'down'
+                status = 'DOWN'
 
                 if self.__configuration.get_notification_gammu() is True:
                     notification_gammu_repeat = self.__configuration.get_notification_gammu_repeat()
