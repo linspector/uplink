@@ -23,7 +23,6 @@
 #  be optional too. Also reinvent SQLite as database backend.
 
 import calendar
-import logging
 import socket
 import time
 
@@ -39,9 +38,10 @@ logger = getLogger('uplink')
 
 class Uplink(Daemon):
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, environment):
         super().__init__(configuration.get_pid_file())
         self.__configuration = configuration
+        self.__environment = environment
 
     def fetch_data(self, i):
         timestamp = calendar.timegm(time.gmtime())
@@ -49,68 +49,68 @@ class Uplink(Daemon):
         date_formatted = time.strftime('%Y-%m-%d', local_time)
         time_formatted = time.strftime('%H:%M:%S', local_time)
 
-        self.__configuration.set_env_var('_internal_last_run_date', date_formatted + ' ' +
-                                         time_formatted)
-        self.__configuration.set_env_var('_internal_last_run_timestamp', timestamp)
+        self.__environment.set_env_var('_internal_last_run_date', date_formatted + ' ' +
+                                       time_formatted)
+        self.__environment.set_env_var('_internal_last_run_timestamp', timestamp)
 
         uplink = self.__configuration.get_uplink(i)
 
         if 'primary' in uplink:
-            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] + '_primary',
-                                             uplink['primary'])
+            self.__environment.set_env_var('_uplink_' + uplink['identifier'] + '_primary',
+                                           uplink['primary'])
 
-        if self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
-                                            '_fail_count') is False:
-            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                             '_fail_count', 0)
+        if self.__environment.get_env_var('_uplink_' + uplink['identifier'] +
+                                          '_fail_count') is False:
+            self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                           '_fail_count', 0)
 
-        if self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
-                                            '_fail_overall_count') is False:
-            self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                             '_fail_overall_count', 0)
+        if self.__environment.get_env_var('_uplink_' + uplink['identifier'] +
+                                          '_fail_overall_count') is False:
+            self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                           '_fail_overall_count', 0)
 
         try:
             fritz_connection = FritzStatus(address=uplink['ip'],
                                            password=uplink['password'])
 
             if fritz_connection.is_connected:
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_fail_count', 0)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_fail_count', 0)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_last_success_date', date_formatted + ' ' +
-                                                 time_formatted)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_last_success_date', date_formatted + ' ' +
+                                               time_formatted)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_last_success_timestamp', timestamp)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_last_success_timestamp', timestamp)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_status', 'UP')
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_status', 'UP')
 
                 status = 'UP'
             else:
                 fail_count = self.__configuration.get_env_var('_uplink_' + uplink['identifier'] +
                                                               '_fail_count')
                 fail_count += 1
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] + '_fail_count',
-                                                 fail_count)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] + '_fail_count',
+                                               fail_count)
 
-                fail_overall_count = self.__configuration.get_env_var('_uplink_' +
-                                                                      uplink['identifier'] +
-                                                                      '_fail_overall_count')
+                fail_overall_count = self.__environment.get_env_var('_uplink_' +
+                                                                    uplink['identifier'] +
+                                                                    '_fail_overall_count')
                 fail_overall_count += 1
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_fail_overall_count', fail_overall_count)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_fail_overall_count', fail_overall_count)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_last_fail_date', date_formatted + ' ' +
-                                                 time_formatted)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_last_fail_date', date_formatted + ' ' +
+                                               time_formatted)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_last_fail_timestamp', timestamp)
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_last_fail_timestamp', timestamp)
 
-                self.__configuration.set_env_var('_uplink_' + uplink['identifier'] +
-                                                 '_status', 'DOWN')
+                self.__environment.set_env_var('_uplink_' + uplink['identifier'] +
+                                               '_status', 'DOWN')
 
                 status = 'DOWN'
 
@@ -161,13 +161,13 @@ class Uplink(Daemon):
     def run(self):
         if self.__configuration.get_http_server():
             from uplink.httpserver import HTTPServer
-            hs = HTTPServer(self.__configuration)
+            hs = HTTPServer(self.__configuration, self.__environment)
             hst = Thread(target=hs.run_server, daemon=True)
             hst.start()
 
         if self.__configuration.get_speedtest():
             from uplink.speedtest import Speedtest
-            st = Speedtest(self.__configuration)
+            st = Speedtest(self.__configuration, self.__environment)
             stt = Thread(target=st.run_speedtest, daemon=True)
             stt.start()
 

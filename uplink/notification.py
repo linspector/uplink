@@ -27,7 +27,7 @@ logger = getLogger('uplink')
 
 class Notification:
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, environment):
         self.__configuration = configuration
         #self.__state_machine = gammu.StateMachine()
         #self.__state_machine.ReadConfig(

@@ -31,15 +31,11 @@ class Configuration:
     def __init__(self, configuration):
         self.__configuration = configuration
 
-        self.__base_configuration = None
         self.__database_host = None
         self.__database_name = None
         self.__database_password = None
         self.__database_port = 3306
         self.__database_user = None
-        # environment vars which can be set dynamically at runtime. these vars are shared across all
-        # objects and readable and writable by all of them.
-        self.__env = {}
         self.__httpserver = False
         self.__httpserver_host = '127.0.0.1'
         self.__httpserver_port = 1042
@@ -182,15 +178,6 @@ class Configuration:
     def get_database_user(self):
         return self.__database_user
 
-    def get_env(self):
-        return self.__env
-
-    def get_env_var(self, key):
-        if key in self.__env:
-            return self.__env[key]
-        else:
-            return False
-
     def get_httpserver(self):
         return self.__httpserver
 
@@ -249,9 +236,6 @@ class Configuration:
         return self.__uplinks
 
     # set methods
-    def set_env_var(self, key, value):
-        self.__env[key] = value
-
     def set_httpserver(self, value):
         self.__httpserver = value
 

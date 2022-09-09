@@ -29,8 +29,9 @@ logger = getLogger('uplink')
 
 class Speedtest:
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, environment):
         self.__configuration = configuration
+        self.__environment = environment
 
         self.__speedtest_maximum_speed = None
         self.__speedtest_average_speed = None
@@ -39,11 +40,11 @@ class Speedtest:
     def run_speedtest(self):
         while True:
             tmp_time = time.localtime(calendar.timegm(time.gmtime()))
-            self.__configuration.set_env_var('_speedtest_last_run_date',
+            self.__environment.set_env_var('_speedtest_last_run_date',
                                              time.strftime('%Y-%m-%d %H:%M:%S',
                                                            tmp_time))
 
-            self.__configuration.set_env_var('_speedtest_last_run_timestamp',
+            self.__environment.set_env_var('_speedtest_last_run_timestamp',
                                              calendar.timegm(time.gmtime()))
 
             start = time.perf_counter()
@@ -65,15 +66,15 @@ class Speedtest:
                     total_mbps += mbps
 
                 self.__speedtest_average_speed = total_mbps / total_chunks
-                self.__configuration.set_env_var('_speedtest_average_speed_megabyte_per_second',
+                self.__environment.set_env_var('_speedtest_average_speed_megabyte_per_second',
                                                  str(round(self.__speedtest_average_speed)))
 
                 self.__speedtest_maximum_speed = maximum_speed
-                self.__configuration.set_env_var('_speedtest_maximum_speed_megabyte_per_second',
+                self.__environment.set_env_var('_speedtest_maximum_speed_megabyte_per_second',
                                                  str(round(self.__speedtest_maximum_speed)))
 
                 self.__speedtest_time_elapsed = time.perf_counter() - start
-                self.__configuration.set_env_var('_speedtest_time_elapsed',
+                self.__environment.set_env_var('_speedtest_time_elapsed',
                                                  str(self.__speedtest_time_elapsed))
                 logger.info('speedtest average: ' + str(self.__speedtest_average_speed) +
                             ', max: ' + str(self.__speedtest_maximum_speed) +

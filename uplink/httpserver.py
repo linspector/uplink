@@ -31,8 +31,9 @@ logger = getLogger('uplink')
 
 class HTTPServer:
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, environment):
         self.__configuration = configuration
+        self.__environment = environment
 
     @cherrypy.expose
     def index(self):
@@ -41,12 +42,24 @@ class HTTPServer:
     @cherrypy.expose
     def configuration(self):
         return '<!DOCTYPE html><html><head><title>[uplink-' + \
-               self.__configuration.get_env_var("__version__") + '@' + \
-               self.__configuration.get_env_var("_hostname") + '] configuration</title><meta ' + \
+               self.__environment.get_env_var("__version__") + '@' + \
+               self.__environment.get_env_var("_hostname") + '] configuration</title><meta ' + \
                'http-equiv="refresh" content="60"></head><body><pre ' + \
                'style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
                json.dumps(vars(self.__configuration), sort_keys=True, indent=4) + \
                '</pre></body></html>'
+
+    @cherrypy.expose
+    def environment(self):
+        return '<!DOCTYPE html><html><head><title>[uplink-' + \
+               self.__environment.get_env_var("__version__") + '@' + \
+               self.__environment.get_env_var("_hostname") + '] environment</title><meta ' + \
+               'http-equiv="refresh" content="60"></head><body><pre ' + \
+               'style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
+               json.dumps(vars(self.__environment), sort_keys=True, indent=4) + \
+               '</pre></body></html>'
+
+
 
     @cherrypy.expose
     def playground(self):
@@ -61,6 +74,11 @@ class HTTPServer:
                 'tools.response_headers.headers': [('Content-Type', 'text/plain')],
             },
             '/configuration': {
+                #    'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                'tools.response_headers.on': True,
+                'tools.response_headers.headers': [('Content-Type', 'text/html')],
+            },
+            '/environment': {
                 #    'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
                 'tools.response_headers.on': True,
                 'tools.response_headers.headers': [('Content-Type', 'text/html')],
