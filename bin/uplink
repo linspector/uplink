@@ -20,10 +20,12 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# TODO: CHECK ALL ERROR HANDLING!!!
-# TODO: Refactor all logging and make it clean and consistent.
-# TODO: become more verbose in each log level and log only to error when it really
-#  is an error else log to info and even add debug messages in DEBUG level.
+"""
+TODO: CHECK ALL ERROR HANDLING!!!
+TODO: Refactor all logging and make it clean and consistent.
+TODO: become more verbose in each log level and log only to error when it really
+ is an error else log to info and even add debug messages in DEBUG level.
+"""
 
 import argparse
 import calendar
@@ -49,7 +51,7 @@ MINOR changes are "just-in-time" changes or small enhancements which should not 
 documentation.
 FIXES should never affect anything else then stability or security.
 """
-__version__ = '0.9.0.1'
+__version__ = '0.9.1.1'
 __author__ = 'Johannes Findeisen <you@hanez.org>'
 
 logger = logging.getLogger('uplink')
@@ -192,8 +194,9 @@ def main():
             ste.start()
 
         while True:
+            timestamp = calendar.timegm(time.gmtime())
             for i in range(len(configuration.get_uplinks())):
-                ft = Thread(target=u.fetch_data, daemon=True, args=(i,))
+                ft = Thread(target=u.fetch_data, daemon=True, args=(i, timestamp,))
                 ft.start()
             try:
                 time.sleep(configuration.get_interval())

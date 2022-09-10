@@ -18,9 +18,11 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# TODO: Make the use of a database optional and only output to stdout and/or in a logfile (use rich
-#  for colorizing the std output (https://github.com/Textualize/rich)); Output to a CSV file should
-#  be optional too. Also reinvent SQLite as database backend.
+"""
+TODO: Make the use of a database optional and only output to stdout and/or in a logfile (use rich
+ for colorizing the std output (https://github.com/Textualize/rich)); Output to a CSV file should
+ be optional too. Also reinvent SQLite as database backend.
+"""
 
 import calendar
 import socket
@@ -43,8 +45,7 @@ class Uplink(Daemon):
         self.__configuration = configuration
         self.__environment = environment
 
-    def fetch_data(self, i):
-        timestamp = calendar.timegm(time.gmtime())
+    def fetch_data(self, i, timestamp):
         local_time = time.localtime(timestamp)
         date_formatted = time.strftime('%Y-%m-%d', local_time)
         time_formatted = time.strftime('%H:%M:%S', local_time)
@@ -172,7 +173,8 @@ class Uplink(Daemon):
             stt.start()
 
         while True:
+            timestamp = calendar.timegm(time.gmtime())
             for i in range(len(self.__configuration.get_uplinks())):
-                ut = Thread(target=self.fetch_data, daemon=True, args=(i,))
+                ut = Thread(target=self.fetch_data, daemon=True, args=(i, timestamp,))
                 ut.start()
             time.sleep(self.__configuration.get_interval())

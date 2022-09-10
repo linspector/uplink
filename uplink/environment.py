@@ -18,22 +18,19 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import re
-import socket
-
 from logging import getLogger
 
 logger = getLogger('uplink')
 
 """
-this is for environment vars which can be set dynamically at runtime. these vars are shared across 
-all objects and are readable and writable by all of them. environment variables are set at runtime 
-and currently not stored in the database. the goal is to minimize all of these vars but for now it 
+this is for environment vars which can be set dynamically at runtime. these vars are shared across
+all objects and are readable and writable by all of them. environment variables are set at runtime
+and currently not stored in the database. the goal is to minimize all of these vars but for now it
 is nice feature to save states without saving them for runtime execution at another place.
-        
-this is experimental because you can set what you want but if a env key you set already exists it 
-will be overwritten. But it is an easy and maybe secure way to to set runtime variables which should 
-not affect the execution of uplink but may be required variables to execute to your wanted 
+
+this is experimental because you can set what you want but if a env key you set already exists it
+will be overwritten. But it is an easy and maybe secure way to to set runtime variables which should
+not affect the execution of uplink but may be required variables to execute to your wanted
 configuration. Core functionality must not be affected when using this class!
 """
 

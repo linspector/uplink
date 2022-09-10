@@ -18,8 +18,10 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# TODO: Select a template engine for easy output creation. Mako preferred but need to
-#  take a look at Jinja.
+"""
+TODO: Select a template engine for easy output creation. Mako preferred but need to
+  take a look at Jinja.
+"""
 
 import cherrypy
 import json
