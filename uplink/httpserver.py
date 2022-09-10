@@ -19,8 +19,8 @@
 # OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-TODO: Select a template engine for easy output creation. Mako preferred but need to
-  take a look at Jinja.
+TODO: Select a template engine for easy output creation. Mako preferred but I need to take a look at
+ Jinja.
 """
 
 import cherrypy
@@ -60,8 +60,6 @@ class HTTPServer:
                'style="border:2px solid black;background:#1d2021;color:#f0751a;">' + \
                json.dumps(vars(self.__environment), sort_keys=True, indent=4) + \
                '</pre></body></html>'
-
-
 
     @cherrypy.expose
     def playground(self):
