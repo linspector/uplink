@@ -157,6 +157,19 @@ class Uplink(Daemon):
 
         except Exception as err:
             message = str('error when getting data from ' + uplink['ip'] + '')
+
+            model = Model(self.__configuration)
+            model.set_date(date_formatted)
+            model.set_internal_ip(uplink['ip'])
+            model.set_message('FATAL: ' + str(message.format(err)))
+            model.set_provider(uplink['provider'])
+            model.set_source_host(socket.gethostname())
+            model.set_time(time_formatted)
+            model.set_timestamp(timestamp)
+
+            database = Database(self.__configuration)
+            database.write_log_to_db(model)
+
             logger.error(str(message.format(err)))
 
     def run(self):
